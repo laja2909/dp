@@ -11,3 +11,5 @@
 ```
 terraform --version
 ```
+It should output the version you installed. If not, close terminal, then try again. Might require you to restart computer
+
