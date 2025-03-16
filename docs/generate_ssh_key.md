@@ -4,7 +4,7 @@
     - hit enter if you want to keep the file name as default
     - set passphrase
     - two files are created: private key file and public key file
-    - open public key file and copy the content to clipboard
-    - go to your hetzner project and under security "Add SSH key"
-    - copy the content of your public to the text field and give name to the key
-    - Create the key
+    - Save them to secure location
+    - go to setup/variable.tf and specify sshkey public key filename to variables called  ```ssh_public_name```
+    - add the file path as environment variable to your local computer. Use variable name ```TF_VAR_ssh_path```
+    

@@ -31,7 +31,9 @@ Now you should have:
 
 Next:
 - terraform configuration files are in setup folder
-- open setup directory
-- 
+- save all sensitive variables into environment variables:
+    - TF_VAR_ssh_path = ```path to your ssh file```
+    - TF_VAR_local_ip = ```your local ip4 address```
+    - 
 
 
