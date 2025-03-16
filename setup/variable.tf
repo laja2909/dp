@@ -1,9 +1,15 @@
 
 #hetzner
-variable "ssh_public_name" {
-    description = "name of the generated ssh key public file"
+variable "hcloud_token" {
+    description = "api token"
     type = string
-    default = "hetz.pub"
+    sensitive = true
+}
+
+variable "local_ip" {
+    description = "your local ip4 address"
+    type = string
+    sensitive = true
 }
 
 variable "server_location" {
@@ -23,3 +29,4 @@ variable "server_type" {
     type = string
     default = "cx32"
 }
+

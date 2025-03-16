@@ -5,6 +5,3 @@
     - set passphrase
     - two files are created: private key file and public key file
     - Save them to secure location
-    - go to setup/variable.tf and specify sshkey public key filename to variables called  ```ssh_public_name```
-    - add the file path as environment variable to your local computer. Use variable name ```TF_VAR_ssh_path```
-    
