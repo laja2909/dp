@@ -23,17 +23,19 @@ Initial setup costs you roughly 27€ / month:
 
 ## Set up
 Now you should have:
-1. terraform installed
-2. hetzner account created & project initialised
+1. terraform installed and terraform cloud set up
+- remember to add hcloud_token as your variable in terraform cloud
+- add your local ip4 address as "local_ip" variable in terraform cloud
+2. hetzner account created & project initialised & token created
 3. DigitalOcean account created
 4. AWS account created and user with s3 access and aws cli
 5. Python installed
 
 Next:
-- terraform configuration files are in setup folder
-- save all sensitive variables into environment variables:
-    - TF_VAR_ssh_path = ```path to your ssh public key file```
-    - TF_VAR_local_ip = ```your local ip4 address```
-    - TF_VAR_hcloud_token = ```your hcloud token```
+-merge branch to main branch and terraform cloud should trigger a run which initialises all resources defined in main.tf file:
+    - server in hetzner cloud
+    - digitalocean managed database
+    - aws s3 bucket
+
 
 
