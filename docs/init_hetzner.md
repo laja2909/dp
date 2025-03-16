@@ -3,3 +3,4 @@
 - Log in to your account
 - Add new project
 - Generate hcloud token -> under security -> api tokens
+- add hcloud token to terraform cloud as "hloud_token" variable
