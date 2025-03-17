@@ -21,4 +21,6 @@ It should output the version you installed. If not, close terminal, then try aga
 - add workspace to project
 - use version control flow method
 - select github branch
-- to variables section we add hcloud token and local ip address (explained later)
+- Now your terraform workspace is ready
+- you can also generate token to access terraform api (optional)
+    - you can save the token as environment variable and access it via 

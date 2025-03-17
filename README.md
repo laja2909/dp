@@ -24,7 +24,7 @@ Initial setup costs you roughly 27€ / month:
 ## Set up
 Now you should have:
 1. terraform installed and terraform cloud set up
-- remember to add hcloud_token as your variable in terraform cloud
+- add hcloud_token as your variable in terraform cloud
 - add your local ip4 address as "local_ip" variable in terraform cloud
 2. hetzner account created & project initialised & token created
 3. DigitalOcean account created
@@ -36,6 +36,5 @@ Next:
     - server in hetzner cloud
     - digitalocean managed database
     - aws s3 bucket
-
-
+-create python virtual environment and load requirements.txt (see docs/create_venv.md)
 
