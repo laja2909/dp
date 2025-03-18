@@ -2,10 +2,6 @@ import requests
 import json
 from helper import get_env_variable, get_public_ip_address
 
-# get variable list from the workspace
-# get id of the specified variable
-# edit variable
-
 def get_response_content(response:requests.Response) -> json:
     if  response.status_code == 200:
         print("retrieved the response..")
@@ -44,8 +40,6 @@ def get_variable_id_of_workspace(organization_name:str,workspace_name:str, varia
             continue
     return variable_id
     
-
-
 def edit_tf_local_ip_variable(organization_name:str,workspace_name:str)-> None:
     tf_token = get_env_variable('TF_TOKEN')
     tf_local_ip_variable_name = 'local_ip'
