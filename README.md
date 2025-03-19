@@ -32,9 +32,17 @@ Now you should have:
 5. Python installed
 
 Next:
--merge branch to main branch and terraform cloud should trigger a run which initialises all resources defined in main.tf file:
+- fork main branch to create it as your own repository
+- create a new branch
+- merge branch to main branch and terraform cloud should trigger a run which initialises all resources defined in main.tf file:
     - server in hetzner cloud
     - digitalocean managed database
     - aws s3 bucket
+
+
+
+
+
+
 -create python virtual environment and load requirements.txt (see docs/create_venv.md)
 
