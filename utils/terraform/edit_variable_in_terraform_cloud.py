@@ -149,4 +149,4 @@ def write_public_key_to_local(state_version_id,ssh_resource_name,public_key_file
     
 
 if __name__=='__main__':
-    write_public_key_to_local('sv-LPGtysANSSUDiwDV','generic-ssh-key','pub_key.pub')
+    write_private_key_to_local('sv-LPGtysANSSUDiwDV','generic-ssh-key','priv_key.key')
