@@ -3,7 +3,12 @@ import socket
 import requests
 
 def get_env_variable(name):
-    return os.environ[name]
+    try:
+        env_var = os.environ[name]
+    except KeyError:
+        raise KeyError(f'environment variable of {name} does not exists')
+
+    return env_var
 
 def get_local_ip_address():
     hostname = socket.gethostname()
