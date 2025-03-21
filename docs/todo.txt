@@ -1,8 +1,11 @@
-# Create docs md of the remote connection
+# Create proper key files and make sure to save them in proper folder (do it in separate py file)
+
+
+#DONE:
 # Create TFCloud class and think about the functions and attributes there
-# Create proper key files and make sure to save them in proper folder
+# Create docs md of the remote connection
 
-
-# You need to have correct indentityfile to access remotely in ssh:
---example this creates a connection: ssh root@159.69.35.153 -i .ssh-tf-hetzner-cloud/id_rsa.key
---and then in .ssh config file replace the identity file attribute with correct absolute path
+#NOTES:
+## You need to have correct indentityfile to access remotely in ssh:
+---example this creates a connection: ssh root@159.69.35.153 -i .ssh-tf-hetzner-cloud/id_rsa.key
+---and then in .ssh config file replace the identity file attribute with correct absolute path
