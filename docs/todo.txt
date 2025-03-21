@@ -1,9 +1,12 @@
-# Create proper key files and make sure to save them in proper folder (do it in separate py file)
+# finish documents
+# check that you have remote access now
+# toml file
 
 
 #DONE:
 # Create TFCloud class and think about the functions and attributes there
 # Create docs md of the remote connection
+# Create proper key files and make sure to save them in proper folder (do it in separate py file)
 
 #NOTES:
 ## You need to have correct indentityfile to access remotely in ssh:

@@ -2,7 +2,7 @@ import json
 
 import requests
 
-from helper import get_env_variable, get_public_ip_address
+from helper import get_env_variable
 
 
 class TFCloud:
