@@ -1,4 +1,4 @@
-# DHub
+# dp
 Data platform project
 
 To define and run data pipelines with following tools:
@@ -15,16 +15,19 @@ Initial setup costs you roughly 27€ / month:
 - 8€ / month to run server in hetzner, 19€ / month for DigitalOcean database. (AWS s3 is free if you not have much data there)
 
 ## Prerequisites
-1. Terraform (docs/init_terraform.md)
-2. hetzner cloud account & project (docs/init_hetzner.md)
-3. DigitalOcean account (docs/init_digital_ocean.md)
-4. AWS account (docs/init_aws.md)
-5. Python
+1. Fork the repository
+2. Create Python virtual environment, instructions [here](docs/create_venv.md)
+2. Create toml file, instruction [here](docs/create_toml.md)
+2. [Terraform docs](docs/systems/init_terraform.md)
+3. [hetzner docs](docs/systems/init_hetzner.md)
+4. [DigitalOcean docs](docs/systems/init_digital_ocean.md)
+5. [AWS docs](docs/systems/init_aws.md)
+6. Python installed
 
 ## Set up
 Now you should have:
 1. terraform installed and terraform cloud set up
-- add hcloud_token as your variable in terraform cloud
+- add "hcloud_token" as your variable in terraform cloud
 - add your local ip4 address as "local_ip" variable in terraform cloud
 2. hetzner account created & project initialised & token created
 3. DigitalOcean account created
@@ -32,13 +35,7 @@ Now you should have:
 5. Python installed
 
 Next:
-- fork main branch to create it as your own repository
-- create a new branch
-- merge branch to main branch and terraform cloud should trigger a run which initialises all resources defined in main.tf file:
-    - server in hetzner cloud
-    - digitalocean managed database
-    - aws s3 bucket
-
+- run te
 
 
 

@@ -1,7 +1,5 @@
+# change name of the project
 # finish documents
-# create manage_tf_cloud.py
-
-
 # toml file
 
 
@@ -10,6 +8,7 @@
 # Create docs md of the remote connection
 # Create proper key files and make sure to save them in proper folder (do it in separate py file)
 # check that you have remote access now
+# create manage_tf_cloud.py
 
 #NOTES:
 ## You need to have correct indentityfile to access remotely in ssh:

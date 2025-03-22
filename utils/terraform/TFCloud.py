@@ -131,6 +131,31 @@ class TFCloud:
         end_point=f'https://app.terraform.io/api/v2/vars/{variable_id}'
         requests.request("PATCH", end_point, headers=self.get_header(),data=json.dumps(payload))
 
+    ##RUN
+    def run(self):
+        workspace_id = self.get_workspace_id()
+        payload = {
+            "data": {
+                "attributes": {
+                    "message": "Custom message"
+                },
+                "type":"runs",
+                "relationships": {
+                    "workspace": {
+                        "data": {
+                            "type": "workspaces",
+                            "id": workspace_id
+                        }
+                    }
+                }
+            }
+        }
+
+        end_point=f'https://app.terraform.io/api/v2/runs'
+        response = requests.request("POST", end_point, headers=self.get_header(),data=json.dumps(payload))
+        content = self.get_content_response(response)
+        return content
+
     
     
     ##UTIL
