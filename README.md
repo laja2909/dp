@@ -1,4 +1,4 @@
-# DHub
+# dp
 Data platform project
 
 To define and run data pipelines with following tools:
@@ -15,16 +15,20 @@ Initial setup costs you roughly 27€ / month:
 - 8€ / month to run server in hetzner, 19€ / month for DigitalOcean database. (AWS s3 is free if you not have much data there)
 
 ## Prerequisites
-1. Terraform (docs/init_terraform.md)
-2. hetzner cloud account & project (docs/init_hetzner.md)
-3. DigitalOcean account (docs/init_digital_ocean.md)
-4. AWS account (docs/init_aws.md)
-5. Python
+1. Fork the repository
+2. Install Python (if not having it already)
+3. Create Python virtual environment, instructions [here](docs/create_venv.md)
+4. install repo in editable state, to get import references worrk, instruction [here](docs/init_project.md)
+5. [Terraform docs](docs/systems/init_terraform.md)
+6. [hetzner docs](docs/systems//hetzner/init_hetzner.md)
+7. [DigitalOcean docs](docs/systems/init_digital_ocean.md)
+8. [AWS docs](docs/systems/init_aws.md)
+
 
 ## Set up
 Now you should have:
 1. terraform installed and terraform cloud set up
-- remember to add hcloud_token as your variable in terraform cloud
+- add "hcloud_token" as your variable in terraform cloud
 - add your local ip4 address as "local_ip" variable in terraform cloud
 2. hetzner account created & project initialised & token created
 3. DigitalOcean account created
@@ -32,10 +36,4 @@ Now you should have:
 5. Python installed
 
 Next:
--merge branch to main branch and terraform cloud should trigger a run which initialises all resources defined in main.tf file:
-    - server in hetzner cloud
-    - digitalocean managed database
-    - aws s3 bucket
-
-
-
+- Install Airflow to hetzner server, instructions [here](docs/systems/hetzner/init_airflow.md)
