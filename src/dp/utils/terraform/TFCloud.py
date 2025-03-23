@@ -2,7 +2,8 @@ import json
 
 import requests
 
-from helper import get_env_variable
+from dp.utils.global_config import *
+from dp.utils.helper import get_env_variable
 
 
 class TFCloud:
@@ -23,13 +24,13 @@ class TFCloud:
     def get_header(self):
         return self._header
     
-    def set_organization_name(self,organization_name:str='dhub-dev') -> str:
+    def set_organization_name(self,organization_name:str=TF_ORGANIZATION_NAME) -> str:
         self._organization_name = organization_name
     
     def get_organization_name(self):
         return self._organization_name
     
-    def set_workspace_name(self,workspace_name:str='DHub') -> str:
+    def set_workspace_name(self,workspace_name:str=TF_WORKSPACE_NAME) -> str:
         self._workspace_name = workspace_name
     
     def get_workspace_name(self):
@@ -133,6 +134,9 @@ class TFCloud:
 
     ##RUN
     def run(self):
+        """
+        runs the terraform run in cloud
+        """
         workspace_id = self.get_workspace_id()
         payload = {
             "data": {
@@ -164,13 +168,11 @@ class TFCloud:
         Response is always in json object
         
         """
-        if  response.status_code == 200:
-            print("retrieved the response..")
+        try:
             content = response.json()
-        else:
-            # if error occurs print the error
-            print(response.content)
-            raise Exception
+            print("retrieved the response..")
+        except json.JSONDecodeError as e:
+            raise Exception('No response: ', e)
         return content
     
     ##BOOL
@@ -186,4 +188,4 @@ if __name__=='__main__':
     tf_api.set_organization_name()
     tf_api.set_workspace_name()
 
-    print(tf_api.get_variable_id())
+    print(tf_api.get_variable_id('local_ip'))

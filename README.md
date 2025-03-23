@@ -17,7 +17,7 @@ Initial setup costs you roughly 27€ / month:
 ## Prerequisites
 1. Fork the repository
 2. Create Python virtual environment, instructions [here](docs/create_venv.md)
-2. Create toml file, instruction [here](docs/create_toml.md)
+2. install repo in editable state, to get import references worrk, instruction [here](docs/init_project.md)
 2. [Terraform docs](docs/systems/init_terraform.md)
 3. [hetzner docs](docs/systems/init_hetzner.md)
 4. [DigitalOcean docs](docs/systems/init_digital_ocean.md)

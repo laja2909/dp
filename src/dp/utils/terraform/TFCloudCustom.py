@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from TFCloud import TFCloud
-from helper import get_public_ip_address, write_files_to_local, get_env_variable
+from dp.utils.helper import get_public_ip_address, write_files_to_local, get_env_variable
 
 class TFCloudCustom(TFCloud):
     def __init__(self):
