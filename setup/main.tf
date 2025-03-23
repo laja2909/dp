@@ -47,8 +47,8 @@ resource "hcloud_firewall" "myfirewall" {
 
 }
 
-resource "hcloud_server" "dhub" {
-  name         = "dhub"
+resource "hcloud_server" "dp" {
+  name         = "dp"
   location     = var.server_location
   image        = var.server_image
   server_type  = var.server_type
