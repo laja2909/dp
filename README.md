@@ -16,13 +16,14 @@ Initial setup costs you roughly 27€ / month:
 
 ## Prerequisites
 1. Fork the repository
-2. Create Python virtual environment, instructions [here](docs/create_venv.md)
-2. install repo in editable state, to get import references worrk, instruction [here](docs/init_project.md)
-2. [Terraform docs](docs/systems/init_terraform.md)
-3. [hetzner docs](docs/systems/init_hetzner.md)
-4. [DigitalOcean docs](docs/systems/init_digital_ocean.md)
-5. [AWS docs](docs/systems/init_aws.md)
-6. Python installed
+2. Install Python (if not having it already)
+3. Create Python virtual environment, instructions [here](docs/create_venv.md)
+4. install repo in editable state, to get import references worrk, instruction [here](docs/init_project.md)
+5. [Terraform docs](docs/systems/init_terraform.md)
+6. [hetzner docs](docs/systems//hetzner/init_hetzner.md)
+7. [DigitalOcean docs](docs/systems/init_digital_ocean.md)
+8. [AWS docs](docs/systems/init_aws.md)
+
 
 ## Set up
 Now you should have:
@@ -35,11 +36,4 @@ Now you should have:
 5. Python installed
 
 Next:
-- run te
-
-
-
-
-
--create python virtual environment and load requirements.txt (see docs/create_venv.md)
-
+- Install Airflow to hetzner server, instructions [here](docs/systems/hetzner/init_airflow.md)
