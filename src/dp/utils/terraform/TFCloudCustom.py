@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from TFCloud import TFCloud
+from dp.utils.terraform.TFCloud import TFCloud
 from dp.utils.helper import get_public_ip_address, write_files_to_local, get_env_variable
 
 class TFCloudCustom(TFCloud):
@@ -60,6 +60,6 @@ if __name__=='__main__':
     tf_api.set_header()
     tf_api.set_organization_name()
     tf_api.set_workspace_name()
-
+    ##tf_api.copy_ssh_keys_from_remote_to_local('generic-ssh-key','id_hetz')
     tf_api.run_change_local_ip_variable_to_current_public_ip('local_ip')
 

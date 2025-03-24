@@ -1,9 +1,11 @@
 
-# finish documents
+# Install airflow:
+--Test kubernetes and helm chart installation (when installing kubernetes, check cpu usage of the hetzner server)
 
 
 
 #DONE:
+# finish documents
 # toml file
 # change name of the project
 # Create TFCloud class and think about the functions and attributes there
