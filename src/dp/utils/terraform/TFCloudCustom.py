@@ -1,3 +1,4 @@
+import argparse
 from pathlib import Path
 
 from dp.utils.terraform.TFCloud import TFCloud
@@ -60,6 +61,17 @@ if __name__=='__main__':
     tf_api.set_header()
     tf_api.set_organization_name()
     tf_api.set_workspace_name()
-    ##tf_api.copy_ssh_keys_from_remote_to_local('generic-ssh-key','id_hetz')
-    tf_api.run_change_local_ip_variable_to_current_public_ip('local_ip')
+
+    parser = argparse.ArgumentParser(description="Run a specific function.")
+    parser.add_argument("function", choices=["change_local_ip", "copy_ssh_key"])
+
+    args = parser.parse_args()
+
+    if args.function == "change_local_ip":
+        tf_api.run_change_local_ip_variable_to_current_public_ip('local_ip')
+    elif args.function == "copy_ssh_key":
+        tf_api.copy_ssh_keys_from_remote_to_local('generic-ssh-key','id_hetz')
+    else:
+        pass
+    
 

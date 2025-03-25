@@ -23,3 +23,13 @@ Prerequisites:
     - bootstrap Kubernetes cluster by running: ```sudo k8s bootstrap```
     - To confirm installation, run: ```sudo k8s status```
     - More info of the Kubernetes commands check [here](docs/systems/hetzner/kubernetes_commands.md)
+
+### Helm
+Helm is the package manager for Kubernetes
+#### Installation
+- run: ```curl -O https://get.helm.sh/helm-v3.16.2-linux-amd64.tar.gz```
+- run: ```tar xvf helm-v3.16.2-linux-amd64.tar.gz```
+- run: ```sudo mv linux-amd64/helm /usr/local/bin```
+- run: ```rm helm-v3.16.2-linux-amd64.tar.gz```
+- run: ```rm -rf linux-amd64```
+- verify installation: ```helm version```
