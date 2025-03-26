@@ -22,6 +22,8 @@ Prerequisites:
     - run: ```sudo snap install k8s --classic --channel=1.32-classic/stable```
     - bootstrap Kubernetes cluster by running: ```sudo k8s bootstrap```
     - To confirm installation, run: ```sudo k8s status```
+    -add kubeconfig env variable:
+    ```export KUBECONFIG=/etc/kubernetes/admin.conf```
     - More info of the Kubernetes commands check [here](docs/systems/hetzner/kubernetes_commands.md)
 
 ### Helm
@@ -49,3 +51,9 @@ executor: "KubernetesExecutor"
 ```kubectl create namespace airflow && kubectl config set-context --current --namespace=airflow```
 - To install airflow in namespace airflow:
 ```helm upgrade --install airflow apache-airflow/airflow --namespace airflow -f values.yaml```
+-add port:
+```sudo k8s kubectl port-forward svc/airflow-webserver 8080:8080 -n airflow```
+-check that helm deployed airlow:
+```helm ls --kubeconfig /etc/kubernetes/admin.conf``` (kubeconfig in canonical kubernetes by default hase config file there.)
+-to access some pod (for example, default airflow.cfg exists in pod/airflow-scheduler...)
+```sudo k8s kubectl exec -it <scheduler-pod-name> -- cat /opt/airflow/airflow.cfg```

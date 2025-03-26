@@ -9,3 +9,6 @@ The standard tool for deploying and managing workloads on Kubernetes is kubectl.
 - uninstall canonical kubernetes snap: ```sudo snap remove k8s```
 - uninstall canonical kubernetes snap and not saving its data, run:
 ```sudo snap remove k8s --purge```
+- enable ingress
+
+
