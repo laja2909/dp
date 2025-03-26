@@ -33,3 +33,19 @@ Helm is the package manager for Kubernetes
 - run: ```rm helm-v3.16.2-linux-amd64.tar.gz```
 - run: ```rm -rf linux-amd64```
 - verify installation: ```helm version```
+
+### Airflow
+Now that you've kubernetes and helm installed, we can use them to install airflow
+
+#### Installation
+- Add helm chart repository for Airflow
+```helm repo add apache-airflow https://airflow.apache.org```
+- update helm repository
+```helm repo update```
+- download values.yaml from:https://artifacthub.io/packages/helm/apache-airflow/airflow (default values)
+- modify values.yaml that suits your needs, for instance:
+executor: "KubernetesExecutor"
+- Create namespace:
+```kubectl create namespace airflow && kubectl config set-context --current --namespace=airflow```
+- To install airflow in namespace airflow:
+```helm upgrade --install airflow apache-airflow/airflow --namespace airflow -f values.yaml```
