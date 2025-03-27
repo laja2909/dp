@@ -45,7 +45,7 @@ Status:
 
 - copy the ssh keys from remote server to your local computer [here](docs/systems/hetzner/remote_connection_hetzner.md)
 
-- 
+- small changes
 
 
 
