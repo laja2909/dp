@@ -1,9 +1,18 @@
 
-# finish documents
+# airflow is now installed
+--need to figure out how dags stuff
+--also when closing ssh remote session, airflow webserver ui not work anymore in localhost:8080
+---if want to access ui again, need to ssh remote and then run the port forward command again.
+---How to solve this??
+
 
 
 
 #DONE:
+# Install airflow:
+--Test kubernetes and helm chart installation (when installing kubernetes, check cpu usage of the hetzner server)
+----This was not due to kubernetes and helm set up, this was due to vscode setting ~"search.symlink"
+# finish documents
 # toml file
 # change name of the project
 # Create TFCloud class and think about the functions and attributes there
