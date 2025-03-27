@@ -2,7 +2,7 @@
 
 - you need to copy the public key and private key from the server
 - We can utilize [TFCloud](../utils/terraform/TFCloud.py) class
-- you can run ```TFCloudCustom.py copy_ssh_key``` (check first the function, may need some modifications)
+- you can run ```python TFCloudCustom.py copy_ssh_key``` (check first the function, may need some modifications)
 - After you've copied the keys, you can access the remote server.
 - For instance, in VSCode:
     - in your VSCode settings, set "search.followsymlink" to false (if not set, this can cause your cpu to throttle after connecting to server)
