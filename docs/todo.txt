@@ -1,4 +1,13 @@
 
+#git workflow
+--Need to configure .github/workflows/main.yml file
+---steps:
+----get runner ip
+----give temporary access to remote server for that ip
+----do the ssh tricks
+----remove the ip from the firewall
+----if any errors occur in the workflow we need to remove the ip from the firewall settings still.
+
 # airflow is now installed
 --need to figure out how dags stuff
 --also when closing ssh remote session, airflow webserver ui not work anymore in localhost:8080
