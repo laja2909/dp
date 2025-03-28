@@ -21,7 +21,7 @@ jobs:
           -X POST \
           -H "Authorization: Bearer ${{ secrets.HETZ_TOKEN }}" \
           -H "Content-Type: application/json" \
-          -d '{"name":"tmp_config","labels":{"key":"value"},"rules":[{"description":"Allow ssh","direction":"in","source_ips":["28.239.13.1/32"],"protocol":"tcp","port":"22"}],"apply_to":[{"type":"server","server":{"id":61974562}}]}' \
+          -d '{"name":"tmp_config","labels":{"key":"value"},"rules":[{"description":"Allow ssh","direction":"in","source_ips":["'$RUNNER_IP'"],"protocol":"tcp","port":"22"}],"apply_to":[{"type":"server","server":{"id":61974562}}]}' \
           'https://api.hetzner.cloud/v1/firewalls'
     #- name: install ssh keys
       # check this thread to understand why its needed:
