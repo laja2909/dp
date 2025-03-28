@@ -1,0 +1,7 @@
+#Local
+LOCAL_ENV_SSH_PATH_NAME = 'SSH_PATH'
+LOCAL_ENV_TF_TOKEN_NAME = 'TF_TOKEN'
+
+#terraform
+TF_ORGANIZATION_NAME = 'dp-data-platform'
+TF_WORKSPACE_NAME = 'dp'

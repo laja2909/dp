@@ -2,7 +2,7 @@ import json
 
 import requests
 
-from dp.utils.global_config import *
+from dp.utils.confs import *
 from dp.utils.helper import get_env_variable
 
 
@@ -15,7 +15,7 @@ class TFCloud:
         pass
 
     #ATTRIBUTES
-    def set_header(self,token_name:str='TF_TOKEN') -> dict:
+    def set_header(self,token_name:str=LOCAL_ENV_TF_TOKEN_NAME) -> dict:
         token = get_env_variable(token_name)
         header = {'Authorization': 'Bearer '+token,
                      'Content-Type': 'application/vnd.api+json'}

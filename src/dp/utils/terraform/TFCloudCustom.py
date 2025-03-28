@@ -2,6 +2,8 @@ import argparse
 from pathlib import Path
 
 from dp.utils.terraform.TFCloud import TFCloud
+
+from dp.utils.confs import *
 from dp.utils.helper import get_public_ip_address, write_files_to_local, get_env_variable
 
 class TFCloudCustom(TFCloud):
@@ -34,7 +36,7 @@ class TFCloudCustom(TFCloud):
                 continue
         return ssh_key_dict
 
-    def copy_ssh_keys_from_remote_to_local(self,ssh_resource_name:str,key_name:str,name_of_ssh_path_env_variable:str='SSH_PATH') -> None:
+    def copy_ssh_keys_from_remote_to_local(self,ssh_resource_name:str,key_name:str,name_of_ssh_path_env_variable:str=LOCAL_ENV_SSH_PATH_NAME) -> None:
         """
         copies ssh keys from state file and saves them to local folder
         """

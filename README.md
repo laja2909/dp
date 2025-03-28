@@ -9,6 +9,8 @@ To define and run data pipelines with following tools:
 3. AWS s3:
 - raw data storage
 - logging
+4. Terraform & Terraform cloud
+- to set up infrastacture
 
 **Note! This setup is not free, you are charged based on services above.**
 Initial setup costs you roughly 27€ / month:
@@ -21,16 +23,22 @@ Initial setup costs you roughly 27€ / month:
 2. Install Python (if not having it already)
 3. Create Python virtual environment, instructions [here](docs/create_venv.md)
 4. install repo in editable state, to get import references work, instruction [here](docs/init_project.md)
-5. [Terraform docs](docs/systems/init_terraform.md)
-6. [hetzner docs](docs/systems//hetzner/init_hetzner.md)
-7. [DigitalOcean docs](docs/systems/init_digital_ocean.md)
-8. [AWS docs](docs/systems/init_aws.md)
+5. [init Terraform](docs/systems/init_terraform.md)
+6. [init hetzner](docs/systems//hetzner/init_hetzner.md)
+7. [init DigitalOcean](docs/systems/init_digital_ocean.md)
+8. [init AWS](docs/systems/init_aws.md)
+
+## Folder structure
+.github = folder to keep github workflow files
+docs = folder to keep all documentations of the project
+setup = only used when initialising the resources and maybe destroying them
+src = all datapipelines and db migrations there and dependencies related to them (more detailed in the docs)
 
 
 ## Set up
 ### Status
 1. terraform installed and terraform cloud set up
-    - add "hcloud_token" as your variable in terraform cloud in the workspace that you created (to create resources to hetzner)
+    - add hetzner api token as "hcloud_token" variable in terraform cloud in the workspace that you created (to create resources to hetzner)
     - add your local ip4 address as "local_ip" variable in terraform cloud in the workspace that you created (for firewall configs)
 2. hetzner account created & project initialised & token created (cloud server)
 3. DigitalOcean account created (maybe not??)
