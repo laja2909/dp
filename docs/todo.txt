@@ -1,12 +1,10 @@
+#Problem:
+--now that we have workflow in main branch. What about if we want to setup all resources again. If we now follow up the setup we need to merge our dev to main and then workflow stars which will fail!
+----Need to do some logic so that all terraform stuff needs to be loaded first before running our workflow.
+----Also in terraform setup we need to mkdir and clone the repo and all that stuff.
+CONTINUE WITH README SETUP SET
+ALSO THINK ABOUT CREATING GLOBAL CONFS FILE FOR ALL NECESSARY VARIABLES!
 
-#git workflow
---Need to configure .github/workflows/main.yml file
----steps:
-----get runner ip
-----give temporary access to remote server for that ip
-----do the ssh tricks
-----remove the ip from the firewall
-----if any errors occur in the workflow we need to remove the ip from the firewall settings still.
 
 # airflow is now installed
 --need to figure out how dags stuff
@@ -18,6 +16,15 @@
 
 
 #DONE:
+#git workflow
+--Need to configure .github/workflows/main.yml file
+---steps:
+----get runner ip
+----give temporary access to remote server for that ip
+----do the ssh tricks
+----remove the ip from the firewall
+----if any errors occur in the workflow we need to remove the ip from the firewall settings still.
+
 # Install airflow:
 --Test kubernetes and helm chart installation (when installing kubernetes, check cpu usage of the hetzner server)
 ----This was not due to kubernetes and helm set up, this was due to vscode setting ~"search.symlink"

@@ -38,7 +38,17 @@ Initial setup costs you roughly 27€ / month:
 
 ### Steps
 
+#### set 
+
+
 #### initialise resources
+- run setup.ps1 (if in windows)
+---run terraform
+---copy ssh keys to local
+---create project folder
+---clone repo in hetzner
+---create ssh keys there
+
 - push your dev branch to github and merge into main. This should trigger terraform cloud run that initialises resources:
 1. hetzner server with:
 - firewall configs so that your local computer has ssh access to it, see docs of remote access [here](docs/systems/hetzner/remote_connection_hetzner.md)
@@ -68,6 +78,14 @@ Initial setup costs you roughly 27€ / month:
 - go to github repo
     - settings > secrets > actions
 - create the following repository secrets
+----HETZ_SERVER_NAME
+----HETZ_TOKEN
+----MAIN_BRANCH
+----SSH_HOST
+----SSH_PRIVATE_KEY
+----SSH_USER
+----WORK_DIR
+
 
 
 

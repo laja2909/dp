@@ -9,7 +9,7 @@ variable "hcloud_token" {
 variable "local_ip" {
     description = "your local ip4 address"
     type = string
-    sensitive = true
+    sensitive = false
 }
 
 variable "server_location" {
