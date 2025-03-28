@@ -43,13 +43,25 @@ jobs:
       #run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }} && git checkout ${{ secrets.MAIN_BRANCH }} && git pull && exit"
 
     - name: get firewall resource hetzner id
+      id: get_firewall_id
       if: steps.create_firewall.outcome == 'success'
       run: |
         FIREWALL_ID=$(curl \
         -H "Authorization: Bearer ${{ secrets.HETZ_TOKEN }}" \
         'https://api.hetzner.cloud/v1/firewalls?name=tmp_config' | jq '.firewalls[0].id')
-        echo "$FIREWALL_ID"
+        echo "FIREWALL_ID=$FIREWALL_ID" >> $GITHUB_ENV
 
-      
+    - name: remove firewall resource from hetzner server
+      id: remove_firewall_from_server
+      if: steps.create_firewall.outcome == 'success' && steps.get_firewall_id.outcome == 'success'
+      run: |
+        curl \
+          -X POST \
+          -H "Authorization: Bearer ${{ secrets.HETZ_TOKEN }}" \
+          -H "Content-Type: application/json" \
+          -d '{"remove_from":[{"type":"server","server":{"id":61974562}}]}' \
+          'https://api.hetzner.cloud/v1/firewalls/$FIREWALL_ID/actions/remove_from_resources'
+
+
     - name: cleanup
       run: rm -rf ~/.ssh
