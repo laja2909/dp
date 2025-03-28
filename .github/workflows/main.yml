@@ -14,7 +14,6 @@ jobs:
       run: |
         RUNNER_IP=$(curl -s https://api.ipify.org)
         echo "RUNNER_IP=$RUNNER_IP" >> $GITHUB_ENV
-        #${{ env.RUNNER_IP }}
 
     - name: Get runner IP in CIDR format
       id: get_cidr
@@ -23,6 +22,7 @@ jobs:
         echo "CIDR=$CIDR" >> $GITHUB_ENV
         
     - name: create new firewall resource to hetzner server
+      id: create_firewall
       run: |
         curl \
           -X POST \
@@ -38,7 +38,18 @@ jobs:
         install -m 600 -D /dev/null ~/.ssh/id_rsa
         echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
         ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
+        
     #- name: connect and pull
       #run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }} && git checkout ${{ secrets.MAIN_BRANCH }} && git pull && exit"
-    #- name: cleanup
-      #run: rm -rf ~/.ssh
+
+    - name: get firewall resource hetzner id
+      if: steps.create_firewall.outcome == 'success'
+      run: |
+        FIREWALL_ID = $(curl \
+        -H "Authorization: Bearer $API_TOKEN" \
+        'https://api.hetzner.cloud/v1/firewalls?name="tmp_config"')
+        echo "$FIREWALL_ID"
+
+      
+    - name: cleanup
+      run: rm -rf ~/.ssh
