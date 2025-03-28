@@ -47,7 +47,7 @@ jobs:
       run: |
         FIREWALL_ID=$(curl \
         -H "Authorization: Bearer ${{ secrets.HETZ_TOKEN }}" \
-        'https://api.hetzner.cloud/v1/firewalls?name=tmp_config') | jq '.firewalls[0].id'
+        'https://api.hetzner.cloud/v1/firewalls?name=tmp_config' | jq '.firewalls[0].id')
         echo "$FIREWALL_ID"
 
       
