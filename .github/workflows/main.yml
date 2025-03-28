@@ -46,10 +46,6 @@ jobs:
       id: get_firewall_id
       if: steps.create_firewall.outcome == 'success'
       run: |
-        TMP=$(curl \
-        -H "Authorization: Bearer ${{ secrets.HETZ_TOKEN }}" \
-        'https://api.hetzner.cloud/v1/firewalls?name=tmp_config')
-        echo "$TMP"
         FIREWALL_ID=$(curl \
         -H "Authorization: Bearer ${{ secrets.HETZ_TOKEN }}" \
         'https://api.hetzner.cloud/v1/firewalls?name=tmp_config' | jq '.firewalls[0].id')
@@ -65,7 +61,14 @@ jobs:
           -H "Content-Type: application/json" \
           -d '{"remove_from":[{"type":"server","server":{"id":61974562}}]}' \
           'https://api.hetzner.cloud/v1/firewalls/'$FIREWALL_ID'/actions/remove_from_resources'
-
-
+          
+    - name: delete firewall resource
+      if: steps.create_firewall.outcome == 'success' && steps.get_firewall_id.outcome == 'success' && steps.remove_firewall_from_server.outcome == 'success'
+      run: |
+        curl \
+          -X DELETE \
+          -H "Authorization: Bearer ${{ secrets.HETZ_TOKEN }}" \
+          'https://api.hetzner.cloud/v1/firewalls/'$FIREWALL_ID''
+    
     - name: cleanup
       run: rm -rf ~/.ssh
