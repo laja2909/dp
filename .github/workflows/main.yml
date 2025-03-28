@@ -25,12 +25,12 @@ jobs:
       run: |
         SERVER_ID=$(curl \
         -H "Authorization: Bearer ${{ secrets.HETZ_TOKEN }}" \
-        'https://api.hetzner.cloud/v1/servers?name={{ secrets.HETZ_SERVER_NAME }}' | jq '.servers[0].id')
+        'https://api.hetzner.cloud/v1/servers?name='{{ secrets.HETZ_SERVER_NAME }}'' | jq '.servers[0].id')
         echo "SERVER_ID=$SERVER_ID" >> $GITHUB_ENV
         
     - name: set firewall name
       run: |
-        FIREWALL_NAME="tmp_firewall"
+        FIREWALL_NAME=tmp_firewall
         echo "FIREWALL_NAME=$FIREWALL_NAME" >> $GITHUB_ENV
       
     - name: create new firewall resource
