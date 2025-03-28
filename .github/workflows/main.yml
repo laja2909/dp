@@ -60,7 +60,7 @@ jobs:
           -H "Authorization: Bearer ${{ secrets.HETZ_TOKEN }}" \
           -H "Content-Type: application/json" \
           -d '{"remove_from":[{"type":"server","server":{"id":61974562}}]}' \
-          'https://api.hetzner.cloud/v1/firewalls/"${FIREWALL_ID}"/actions/remove_from_resources'
+          'https://api.hetzner.cloud/v1/firewalls/${FIREWALL_ID}/actions/remove_from_resources'
 
 
     - name: cleanup
