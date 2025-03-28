@@ -45,8 +45,8 @@ jobs:
     - name: get firewall resource hetzner id
       if: steps.create_firewall.outcome == 'success'
       run: |
-        FIREWALL_ID = $(curl \
-        -H "Authorization: Bearer $API_TOKEN" \
+        FIREWALL_ID=$(curl \
+        -H "Authorization: Bearer ${{ secrets.HETZ_TOKEN }}" \
         'https://api.hetzner.cloud/v1/firewalls?name="tmp_config"')
         echo "$FIREWALL_ID"
 
