@@ -13,6 +13,7 @@ jobs:
     - name: get runner ip
       run: |
         RUNNER_IP=$(curl -s https://api.ipify.org)
+        echo "$RUNNER_IP"
     - name: create new firewall resource to hetzner server
       run: |
         curl -X POST -H "Authorization: Bearer ${{ secrets.HETZ_TOKEN }}" -H "Content-Type: application/json" -d '{"name":"tmp_config","labels":{"key":"value"},"rules":[{"description":"Allow ssh","direction":"in","source_ips":["$RUNNER_IP"],"protocol":"tcp","port":"22"}],"apply_to":[{"type":"server","server":{"id":61974562}}]}' "https://api.hetzner.cloud/v1/firewalls"
