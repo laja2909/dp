@@ -15,20 +15,32 @@ jobs:
         RUNNER_IP=$(curl -s https://api.ipify.org)
         echo "RUNNER_IP=$RUNNER_IP" >> $GITHUB_ENV
 
-    - name: Get runner IP in CIDR format
-      id: get_cidr
+    - name: transform runner ip to CIDR format
+      id: to_cidr
       run: |
         CIDR="${RUNNER_IP}/32"
         echo "CIDR=$CIDR" >> $GITHUB_ENV
+
+    - name: get hetzner server id
+      run: |
+        SERVER_ID=$(curl \
+        -H "Authorization: Bearer ${{ secrets.HETZ_TOKEN }}" \
+        'https://api.hetzner.cloud/v1/servers?name={{ secrets.HETZ_SERVER_NAME }}' | jq '.servers[0].id')
+        echo "SERVER_ID=$SERVER_ID" >> $GITHUB_ENV
         
-    - name: create new firewall resource to hetzner server
+    - name: set firewall name
+      run: |
+        FIREWALL_NAME="tmp_firewall"
+        echo "FIREWALL_NAME=$FIREWALL_NAME" >> $GITHUB_ENV
+      
+    - name: create new firewall resource
       id: create_firewall
       run: |
         curl \
           -X POST \
           -H "Authorization: Bearer ${{ secrets.HETZ_TOKEN }}" \
           -H "Content-Type: application/json" \
-          -d '{"name":"tmp_config","labels":{"key":"value"},"rules":[{"description":"Allow ssh","direction":"in","source_ips":["'$CIDR'"],"protocol":"tcp","port":"22"}],"apply_to":[{"type":"server","server":{"id":61974562}}]}' \
+          -d '{"name":"'$FIREWALL_NAME'","labels":{"key":"value"},"rules":[{"description":"Allow ssh","direction":"in","source_ips":["'$CIDR'"],"protocol":"tcp","port":"22"}],"apply_to":[{"type":"server","server":{"id":'$SERVER_ID'}}]}' \
           'https://api.hetzner.cloud/v1/firewalls'
           
     - name: install ssh keys
@@ -48,7 +60,7 @@ jobs:
       run: |
         FIREWALL_ID=$(curl \
         -H "Authorization: Bearer ${{ secrets.HETZ_TOKEN }}" \
-        'https://api.hetzner.cloud/v1/firewalls?name=tmp_config' | jq '.firewalls[0].id')
+        'https://api.hetzner.cloud/v1/firewalls?name='$FIREWALL_NAME'' | jq '.firewalls[0].id')
         echo "FIREWALL_ID=$FIREWALL_ID" >> $GITHUB_ENV
 
     - name: remove firewall resource from hetzner server
@@ -59,7 +71,7 @@ jobs:
           -X POST \
           -H "Authorization: Bearer ${{ secrets.HETZ_TOKEN }}" \
           -H "Content-Type: application/json" \
-          -d '{"remove_from":[{"type":"server","server":{"id":61974562}}]}' \
+          -d '{"remove_from":[{"type":"server","server":{"id":'$SERVER_ID'}}]}' \
           'https://api.hetzner.cloud/v1/firewalls/'$FIREWALL_ID'/actions/remove_from_resources'
           
     - name: delete firewall resource
