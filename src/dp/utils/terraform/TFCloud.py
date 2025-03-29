@@ -207,9 +207,21 @@ class TFCloud:
         response = requests.request("POST", end_point, headers=self.get_header(),data=json.dumps(payload))
         content = self.get_content_response(response)
         return content
+    
+    def run_destroy_resources(self,workspace_name:str=TF_WORKSPACE_NAME):
+        workspace_id = self.get_workspace_id()
+        end_point = f'https://app.terraform.io/api/v2/workspaces/{workspace_id}/runs'
+        payload = {
+            "data": {
+                "attributes": {
+                    "message": "Destroy resources in this workspace",
+                    "is-destroy": True  # This will indicate a destroy operation
+                },
+                "type": "runs"
+            }
+        }
+        response = requests.request("POST", end_point, headers=self.get_header(),data=json.dumps(payload))
 
-    
-    
     ##UTIL
     def get_content_response(self,response:requests.Response) -> json:
         """
