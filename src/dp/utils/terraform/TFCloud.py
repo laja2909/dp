@@ -36,6 +36,23 @@ class TFCloud:
     def get_workspace_name(self):
         return self._workspace_name
     
+    #Create
+    def create_organization(self,organization_name:str=TF_ORGANIZATION_NAME):
+        header = self.get_header()
+        end_point='https://app.terraform.io/api/v2/organizations'
+        payload={
+            "data": {
+                "type": "organizations",
+                "attributes": {
+                    "name": organization_name,
+                    "email": "user@example.com"
+                }
+            }
+        }
+        requests.request("PATCH", end_point, headers=self.get_header(),data=json.dumps(payload))
+
+
+
     #GET
     def get_workspace_id(self) -> str:
         header = self.get_header()
@@ -108,7 +125,12 @@ class TFCloud:
         response = requests.request("GET", url_path_to_state_version_content, headers=self.get_header())
         content = self.get_content_response(response)
         return content
-
+    
+    def get_resources_from_workspace(self, workspace_id:str) -> json:
+        end_point = f'https://app.terraform.io/api/v2/workspaces/{workspace_id}/resources'
+        response = requests.request("GET", end_point, headers=self.get_header())
+        content = self.get_content_response(response)
+        return content
 
     #EDIT
     def edit_variable_value(self,variable_name:str,new_variable_value:str)->None:
@@ -155,6 +177,32 @@ class TFCloud:
             }
         }
 
+        end_point=f'https://app.terraform.io/api/v2/runs'
+        response = requests.request("POST", end_point, headers=self.get_header(),data=json.dumps(payload))
+        content = self.get_content_response(response)
+        return content
+    
+    def run_with_message(self,message:str):
+        """
+        runs the terraform run in cloud
+        """
+        workspace_id = self.get_workspace_id()
+        payload = {
+            "data": {
+                "attributes": {
+                    "message": message
+                },
+                "type":"runs",
+                "relationships": {
+                    "workspace": {
+                        "data": {
+                            "type": "workspaces",
+                            "id": workspace_id
+                        }
+                    }
+                }
+            }
+        }
         end_point=f'https://app.terraform.io/api/v2/runs'
         response = requests.request("POST", end_point, headers=self.get_header(),data=json.dumps(payload))
         content = self.get_content_response(response)
