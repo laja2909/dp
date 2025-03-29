@@ -1,3 +1,6 @@
+CONTINUE WITH THE terrafrom api stuff, we can automate the organization creation and workspace creation!
+
+
 #Problem:
 --now that we have workflow in main branch. What about if we want to setup all resources again. If we now follow up the setup we need to merge our dev to main and then workflow stars which will fail!
 ----Need to do some logic so that all terraform stuff needs to be loaded first before running our workflow.
