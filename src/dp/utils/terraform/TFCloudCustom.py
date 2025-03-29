@@ -3,15 +3,22 @@ from pathlib import Path
 
 from dp.utils.terraform.TFCloud import TFCloud
 
-from dp.utils.confs import *
+from dp.utils.confs import confs
 from dp.utils.helper import get_public_ip_address, write_files_to_local, get_env_variable
 
 class TFCloudCustom(TFCloud):
-    def __init__(self):
-        super().__init__()
+    """
+    Class to help with Terraform Cloud API calls
+    This class is specific to data platform project which is why subclass is created.
+
+    
+    """
+    def __init__(self,token_name:str=confs['terraform']['api_token']['name'],
+                 organization:str=confs['terraform']['organization']['name'],
+                 workspace:str=confs['terraform']['workspace']['name']):
+        super().__init__(token_name,organization,workspace)
     
     def change_local_ip_variable_to_current_public_ip(self,tf_local_ip_variable_name:str):
-   
         # check if local ip variable is the same as current public ip address
         current_public_address = get_public_ip_address()
         is_equal = self.is_equal_to_variable_value(current_public_address,tf_local_ip_variable_name)
@@ -21,7 +28,20 @@ class TFCloudCustom(TFCloud):
             pass
         else:
             print('changing the ip address variable')
-            self.edit_variable_value(variable_name=tf_local_ip_variable_name,new_variable_value=current_public_address)
+            payload = {
+                "data":{
+                    "id":self.get_variable_id(tf_local_ip_variable_name),
+                    "attributes":{
+                        "key":tf_local_ip_variable_name,
+                        "value":current_public_address,
+                        "description": "Changing local ip variable",
+                        "category":"terraform",
+                        "hcl": False,
+                        "sensitive": False
+                },
+                "type":"vars"
+            }}
+            self.edit_variable_value(variable_name=tf_local_ip_variable_name,payload=payload)
 
     def get_ssh_keys(self,ssh_resource_name:str) -> dict:
         ssh_key_dict = {}
@@ -36,7 +56,8 @@ class TFCloudCustom(TFCloud):
                 continue
         return ssh_key_dict
 
-    def copy_ssh_keys_from_remote_to_local(self,ssh_resource_name:str,key_name:str,name_of_ssh_path_env_variable:str=LOCAL_ENV_SSH_PATH_NAME) -> None:
+    def copy_ssh_keys_from_remote_to_local(self,ssh_resource_name:str,key_name:str,
+                                           name_of_ssh_path_env_variable:str=confs['local']['ssh_path']['name']) -> None:
         """
         copies ssh keys from state file and saves them to local folder
         """
@@ -54,16 +75,28 @@ class TFCloudCustom(TFCloud):
         ##change the variable name
         self.change_local_ip_variable_to_current_public_ip(tf_local_ip_variable_name)
         ##immediately run the change
-        self.run()
+        payload = {
+            "data": {
+                "attributes": {
+                    "message": "Changing local ip variable to current public ip"
+                },
+                "type":"runs",
+                "relationships": {
+                    "workspace": {
+                        "data": {
+                            "type": "workspaces",
+                            "id": self.get_workspace_id()
+                        }
+                    }
+                }
+            }
+        }
+        self.run_in_runs_end_point(payload=payload)
 
 
 if __name__=='__main__':
     # init tfcloud instance
     tf_api = TFCloudCustom()
-    tf_api.set_header()
-    tf_api.set_organization_name()
-    tf_api.set_workspace_name()
-
     parser = argparse.ArgumentParser(description="Run a specific function.")
     parser.add_argument("function", choices=["change_local_ip", "copy_ssh_key"])
 

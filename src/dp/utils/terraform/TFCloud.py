@@ -2,62 +2,84 @@ import json
 
 import requests
 
-from dp.utils.confs import *
+from dp.utils.confs import confs
 from dp.utils.helper import get_env_variable
 
 
 class TFCloud:
     """
     Class to help with Terraform Cloud API calls
+    This class expects you to work on specific organization and workspace
     
     """
-    def __init__(self):
-        pass
+    def __init__(self,token_name:str=confs['terraform']['api_token']['name'],
+                 organization:str=confs['terraform']['organization']['name'],
+                 workspace:str=confs['terraform']['workspace']['name']
+                 ):
+        
+        self._token_name=token_name
+        self._organization_name=organization
+        self._workspace_name=workspace
 
-    #ATTRIBUTES
-    def set_header(self,token_name:str=LOCAL_ENV_TF_TOKEN_NAME) -> dict:
         token = get_env_variable(token_name)
-        header = {'Authorization': 'Bearer '+token,
+        self._header = {'Authorization': 'Bearer '+token,
                      'Content-Type': 'application/vnd.api+json'}
-        self._header = header
-
-    def get_header(self):
-        return self._header
     
-    def set_organization_name(self,organization_name:str=TF_ORGANIZATION_NAME) -> str:
-        self._organization_name = organization_name
     
+    #ATTRIBUTES
+    def get_token_name(self):
+        return self._token_name
+        
     def get_organization_name(self):
         return self._organization_name
-    
-    def set_workspace_name(self,workspace_name:str=TF_WORKSPACE_NAME) -> str:
-        self._workspace_name = workspace_name
     
     def get_workspace_name(self):
         return self._workspace_name
     
+    def get_header(self):
+        return self._header
+    
     #Create
-    def create_organization(self,organization_name:str=TF_ORGANIZATION_NAME):
-        header = self.get_header()
+    def create_organization(self,payload:dict):
         end_point='https://app.terraform.io/api/v2/organizations'
+        """
         payload={
             "data": {
                 "type": "organizations",
                 "attributes": {
                     "name": organization_name,
-                    "email": "user@example.com"
+                    "email": email
                 }
             }
         }
+        """
+        requests.request("POST", end_point, headers=self.get_header(),data=json.dumps(payload))
+
+    def create_workspace(self,payload:dict):
+        end_point=f'https://app.terraform.io/api/v2/organizations/{self.get_organization_name()}/workspaces'
         requests.request("PATCH", end_point, headers=self.get_header(),data=json.dumps(payload))
 
-
-
     #GET
+    def get_oauth_client_id_by_service_provider(self,service_provider:str) -> str:
+        end_point = f'https://app.terraform.io/api/v2/organizations/{self.get_organization_name()}/oauth-clients'
+        response = requests.request("GET", end_point, headers=self.get_header())
+        content = self.get_content_response(response)
+        for ind, value in enumerate(content['data']):
+            if value['attributes']['service-provider']==service_provider:
+                client_id = value['id']
+            else:
+                continue
+        return client_id
+    
+    def get_oauth_token_id_by_client_id(self,client_id:str)-> str:
+        end_point = f'https://app.terraform.io/api/v2/oauth-clients/{client_id}/oauth-tokens'
+        response = requests.request("GET", end_point, headers=self.get_header())
+        content = self.get_content_response(response)
+        return content['data'][0]['id']
+
     def get_workspace_id(self) -> str:
-        header = self.get_header()
         end_point = f'https://app.terraform.io/api/v2/organizations/{self.get_organization_name()}/workspaces'
-        response = requests.request("GET", end_point, headers=header)
+        response = requests.request("GET", end_point, headers=self.get_header())
         content = self.get_content_response(response)
         for ind, value in enumerate(content['data']):
             if value['attributes']['name']==self.get_workspace_name():
@@ -74,8 +96,7 @@ class TFCloud:
         """
         workspace_id = self.get_workspace_id()
         end_point = f'https://app.terraform.io/api/v2/workspaces/{workspace_id}/vars'
-        header = self.get_header()
-        response = requests.request("GET", end_point, headers=header)
+        response = requests.request("GET", end_point, headers=self.get_header())
         content = self.get_content_response(response)
         return content
     
@@ -133,94 +154,28 @@ class TFCloud:
         return content
 
     #EDIT
-    def edit_variable_value(self,variable_name:str,new_variable_value:str)->None:
+    def edit_variable_value(self,variable_name:str,payload:dict)->None:
         """
         Change existing variable value
         """
         variable_id = self.get_variable_id(variable_name)
-        payload = {
-            "data":{
-                "id":variable_id,
-                "attributes":{
-                    "key":variable_name,
-                    "value":new_variable_value,
-                    "description": "description",
-                    "category":"terraform",
-                    "hcl": False,
-                    "sensitive": False
-                },
-                "type":"vars"
-            }}
         end_point=f'https://app.terraform.io/api/v2/vars/{variable_id}'
         requests.request("PATCH", end_point, headers=self.get_header(),data=json.dumps(payload))
-
+        
     ##RUN
-    def run(self):
+    def run_in_runs_end_point(self,payload:dict):
         """
         runs the terraform run in cloud
         """
-        workspace_id = self.get_workspace_id()
-        payload = {
-            "data": {
-                "attributes": {
-                    "message": "Custom message"
-                },
-                "type":"runs",
-                "relationships": {
-                    "workspace": {
-                        "data": {
-                            "type": "workspaces",
-                            "id": workspace_id
-                        }
-                    }
-                }
-            }
-        }
-
         end_point=f'https://app.terraform.io/api/v2/runs'
         response = requests.request("POST", end_point, headers=self.get_header(),data=json.dumps(payload))
         content = self.get_content_response(response)
         return content
     
-    def run_with_message(self,message:str):
-        """
-        runs the terraform run in cloud
-        """
-        workspace_id = self.get_workspace_id()
-        payload = {
-            "data": {
-                "attributes": {
-                    "message": message
-                },
-                "type":"runs",
-                "relationships": {
-                    "workspace": {
-                        "data": {
-                            "type": "workspaces",
-                            "id": workspace_id
-                        }
-                    }
-                }
-            }
-        }
-        end_point=f'https://app.terraform.io/api/v2/runs'
-        response = requests.request("POST", end_point, headers=self.get_header(),data=json.dumps(payload))
-        content = self.get_content_response(response)
-        return content
-    
-    def run_destroy_resources(self,workspace_name:str=TF_WORKSPACE_NAME):
+    def run_in_workspace_runs_end_point(self,payload:dict):
         workspace_id = self.get_workspace_id()
         end_point = f'https://app.terraform.io/api/v2/workspaces/{workspace_id}/runs'
-        payload = {
-            "data": {
-                "attributes": {
-                    "message": "Destroy resources in this workspace",
-                    "is-destroy": True  # This will indicate a destroy operation
-                },
-                "type": "runs"
-            }
-        }
-        response = requests.request("POST", end_point, headers=self.get_header(),data=json.dumps(payload))
+        requests.request("POST", end_point, headers=self.get_header(),data=json.dumps(payload))
 
     ##UTIL
     def get_content_response(self,response:requests.Response) -> json:
@@ -244,8 +199,4 @@ class TFCloud:
 
 if __name__=='__main__':
     tf_api = TFCloud()
-    tf_api.set_header()
-    tf_api.set_organization_name()
-    tf_api.set_workspace_name()
-
     print(tf_api.get_variable_id('local_ip'))
