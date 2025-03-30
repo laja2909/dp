@@ -1,5 +1,6 @@
 CONTINUE WITH THE terrafrom api stuff, we can automate the organization creation and workspace creation!
 --almost done, need to test this and modify readme file. SO start from the scratch (delete everything from the terraform and lets see how we can set it up)
+----deleted everything, start from readme and terraform
 ---figure out github token stuff
 
 
