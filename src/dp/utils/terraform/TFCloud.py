@@ -87,6 +87,14 @@ class TFCloud:
         response = self.call_api('GET',end_point=end_point)
         content = self.get_content_response(response)
         return content
+    
+    def get_github_oauth_token_id(self) -> str:
+        url_path = self.get_account_details()['data']['attributes']['github-app-oauth-tokens']['links']['related']
+        end_point = f'https://app.terraform.io{url_path}'
+        response = self.call_api('GET',end_point=end_point)
+        content = self.get_content_response(response)
+        return content['data'][0]['id']
+
 
     def get_oauth_clients_content(self) -> dict:
         end_point = f'https://app.terraform.io/api/v2/organizations/{self.get_organization_name()}/oauth-clients'
@@ -101,7 +109,6 @@ class TFCloud:
         for ind, value in enumerate(content['data']):
             client_ids.append(value['id'])
         return client_ids
-
 
     def get_oauth_client_id_by_service_provider(self,service_provider:str) -> str:
         content = self.get_oauth_clients_content()
@@ -278,4 +285,4 @@ class TFCloud:
 
 if __name__=='__main__':
     tf_api = TFCloud()
-    print(tf_api.get_variable_id('local_ip'))
+    print(tf_api.get_account_details())

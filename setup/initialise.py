@@ -1,6 +1,8 @@
 import argparse
 
 from dp.utils.terraform.TFCloudCustom import TFCloudCustom
+from dp.utils.confs import confs
+from dp.utils.helper import get_env_variable
 
 class InitialiseProject:
     def __init__(self):
@@ -82,8 +84,32 @@ class InitialiseProject:
     def init_project(self):
         # create terraform organization and workspace
         tf_session = self.init_terraform_session()
-        tf_session.create_organization(organization_name=tf_session.get_organization_name())
-        tf_session.create_workspace(workspace_name=tf_session.get_workspace_name())
+        payload_organization = {
+            "data": {
+                "type": "organizations",
+                "attributes": {
+                    "name": tf_session.get_organization_name(),
+                    "email": get_env_variable(confs['terraform']['email']['name'])
+                }
+            }}
+        
+        tf_session.create_organization(payload=payload_organization)
+        payload_workspace = {
+            "data": {
+                "attributes": {
+                    "name": tf_session.get_workspace_name(),
+                    "file-triggers-enabled": True,
+                    "trigger-prefixes": ["./*"],
+                    "working-directory": "./setup",
+                    "vcs-repo": {
+                        "identifier": f"{get_env_variable(confs['github']['user']['name'])}/{get_env_variable(confs['github']['repository']['name'])}",
+                        "oauth-token-id": tf_session.get_github_oauth_token_id(),
+                        "branch": ""
+                    }
+                },
+                "type": "workspaces"
+            }}
+        tf_session.create_workspace(payload=payload_workspace)
 
 if __name__=='__main__':
     init_proj = InitialiseProject()

@@ -38,21 +38,17 @@ src = all datapipelines and db migrations there and dependencies related to them
 ## Set up
 ### Status
 1. terraform installed and terraform cloud set up
-    - add hetzner api token as "hcloud_token" variable in terraform cloud in the workspace that you created (to create resources to hetzner)
-    - add your local ip4 address as "local_ip" variable in terraform cloud in the workspace that you created (for firewall configs)
 2. hetzner account created & project initialised & token created (cloud server)
 3. DigitalOcean account created (maybe not??)
 4. AWS account created and user with s3 access and aws cli
 
 ### Steps
 
-#### set 
-
-
-#### initialise resources
-- run setup.ps1 (if in windows)
----run terraform
----copy ssh keys to local
+- go to confs file and check that you have added necessary local environment variables, you can change the "RAW" types the name that you like
+- run initialise.py from setup folder (Note! After this you resources are running and they are billable):
+---creates terraform organization and workspace with needed variables
+---run terraform resources
+---copies ssh keys to local
 ---create project folder
 ---clone repo in hetzner
 ---create ssh keys there
