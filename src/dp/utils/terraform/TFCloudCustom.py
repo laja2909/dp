@@ -41,7 +41,7 @@ class TFCloudCustom(TFCloud):
                 },
                 "type":"vars"
             }}
-            self.edit_variable_value(variable_name=tf_local_ip_variable_name,payload=payload)
+            self.update_variable_value(variable_name=tf_local_ip_variable_name,payload=payload)
 
     def get_ssh_keys(self,ssh_resource_name:str) -> dict:
         ssh_key_dict = {}
