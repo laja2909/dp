@@ -137,7 +137,7 @@ class TFCloud:
             if value['attributes']['name']==self.get_workspace_name():
                 workspace_id = value['id']
             else:
-                continue
+                workspace_id=''
         return workspace_id
     
     def get_vars_end_point_content(self):

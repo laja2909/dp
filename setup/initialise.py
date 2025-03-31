@@ -11,6 +11,65 @@ class InitialiseProject:
     def init_terraform_session(self):
         tf_session = TFCloudCustom()
         return tf_session
+    
+    def init_project(self):
+        # create terraform organization
+        tf_session = self.init_terraform_session()
+        payload_organization = {
+            "data": {
+                "type": "organizations",
+                "attributes": {
+                    "name": tf_session.get_organization_name(),
+                    "email": get_env_variable(confs['terraform']['email']['name'])
+                }
+            }}        
+        tf_session.create_organization(payload=payload_organization)
+        
+        payload_workspace = {
+            "data": {
+                "attributes": {
+                    "name": tf_session.get_workspace_name()
+                },
+                "type": "workspaces"
+            }}
+        
+        
+        """
+
+
+        tf_session.create_workspace(payload=payload_workspace)
+
+        # create workspace variables
+        payload_local_ip = {
+            "data": {
+                "type":"vars",
+                "attributes": {
+                    "key":"local_ip",
+                    "value":get_public_ip_address(),
+                    "description":"local ip address needed for firewall configs",
+                    "category":"terraform",
+                    "hcl":False,
+                    "sensitive":False
+                }
+            }}
+        tf_session.create_workspace_variable(payload=payload_local_ip)
+        payload_hcloud_token = {
+            "data": {
+                "type":"vars",
+                "attributes": {
+                    "key":"hcloud_token",
+                    "value":get_env_variable(confs['hetzner']['api_token']['name']),
+                    "description":"hetzner token to enable resource creation",
+                    "category":"terraform",
+                    "hcl":False,
+                    "sensitive":True
+                }
+            }}
+        tf_session.create_workspace_variable(payload=payload_hcloud_token)
+
+        ## init resources 
+        ##self.init_terraform_resources()
+        """
 
     def init_terraform_resources(self):
         tf_session = self.init_terraform_session()
@@ -72,63 +131,13 @@ class InitialiseProject:
             print('No resources running. Skip destruction')
         ## delete workspace
         tf_session = self.init_terraform_session()
-        ##tf_session.delete_workspace()
+        tf_session.delete_workspace()
         ## delete organization
-        ##tf_session.delete_organization()
-        ## delete oauth tokens
-        client_ids = tf_session.get_oauth_token_id()
-        print(client_ids)
+        tf_session.delete_organization()
 
 
         
-    def init_project(self):
-        # create terraform organization and workspace
-        tf_session = self.init_terraform_session()
-        payload_organization = {
-            "data": {
-                "type": "organizations",
-                "attributes": {
-                    "name": tf_session.get_organization_name(),
-                    "email": get_env_variable(confs['terraform']['email']['name'])
-                }
-            }}
-        
-        tf_session.create_organization(payload=payload_organization)
-        payload_workspace = {
-            "data": {
-                "attributes": {
-                    "name": tf_session.get_workspace_name()
-                },
-                "type": "workspaces"
-            }}
-        tf_session.create_workspace(payload=payload_workspace)
-
-        # create workspace variables
-        payload_local_ip = {
-            "data": {
-                "type":"vars",
-                "attributes": {
-                    "key":"local_ip",
-                    "value":get_public_ip_address(),
-                    "description":"local ip address needed for firewall configs",
-                    "category":"terraform",
-                    "hcl":False,
-                    "sensitive":False
-                }
-            }}
-        tf_session.create_workspace_variable(payload=payload_local_ip)
-        payload_hcloud_token = {
-            "data": {
-                "type":"vars",
-                "attributes": {
-                    "key":"hcloud_token",
-                    "value":get_env_variable(confs['hetzner']['api_token']['name']),
-                    "description":"local ip address needed for firewall configs",
-                    "category":"terraform",
-                    "hcl":False,
-                    "sensitive":True
-                }
-            }}
+    
 
 if __name__=='__main__':
     init_proj = InitialiseProject()
