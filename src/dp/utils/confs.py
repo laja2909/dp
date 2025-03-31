@@ -33,6 +33,13 @@ confs = {
             'description':'local environment variable to store github repository name'
         }
     },
+    'hetzner':{
+        'api_token':{
+            'type':'LOCAL_ENV',
+            'name':'HETZ_TOKEN',
+            'description':'local environment variable to store hetzner api key'
+        }
+    },
     'local':{
         'ssh_path':{
             'type':'LOCAL_ENV',

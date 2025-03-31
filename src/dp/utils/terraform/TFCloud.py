@@ -58,7 +58,9 @@ class TFCloud:
 
     def create_workspace(self,payload:dict):
         end_point=f'https://app.terraform.io/api/v2/organizations/{self.get_organization_name()}/workspaces'
-        self.call_api('PATCH',end_point=end_point,payload=payload)
+        response = self.call_api('POST',end_point=end_point,payload=payload)
+        content = self.get_content_response(response=response)
+        return content
         #requests.request("PATCH", end_point, headers=self.get_header(),data=json.dumps(payload))
 
     def create_workspace_variable(self, payload:dict):
@@ -89,7 +91,7 @@ class TFCloud:
         return content
     
     def get_github_oauth_token_id(self) -> str:
-        url_path = self.get_account_details()['data']['attributes']['github-app-oauth-tokens']['links']['related']
+        url_path = self.get_account_details()['data']['relationships']['github-app-oauth-tokens']['links']['related']
         end_point = f'https://app.terraform.io{url_path}'
         response = self.call_api('GET',end_point=end_point)
         content = self.get_content_response(response)
@@ -285,4 +287,4 @@ class TFCloud:
 
 if __name__=='__main__':
     tf_api = TFCloud()
-    print(tf_api.get_account_details())
+    print(tf_api.get_oauth_clients_content())

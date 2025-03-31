@@ -53,13 +53,6 @@ src = all datapipelines and db migrations there and dependencies related to them
 ---clone repo in hetzner
 ---create ssh keys there
 
-- push your dev branch to github and merge into main. This should trigger terraform cloud run that initialises resources:
-1. hetzner server with:
-- firewall configs so that your local computer has ssh access to it, see docs of remote access [here](docs/systems/hetzner/remote_connection_hetzner.md)
-- by default, project directory is created where the github main branch will be cloned and virtualenv is created and project initialised
-2. DigitalOcean?
-3. AWS s3 bucket
-
 #### config remote ssh access
 - once remote server is created, copy the ssh keys from remote server to your local computer [here](docs/systems/hetzner/remote_connection_hetzner.md)
 
@@ -67,7 +60,7 @@ src = all datapipelines and db migrations there and dependencies related to them
 
 #### set up github sync
 - Everytime we push changes to main branch, we want to remote server be in sync with the latest changes
-- go to root users home directory (/root)
+- remote access to hetzner server, and go to root users home directory (/root)
 - create projects directory
 ```mkdir projects```
 ```cd projects```

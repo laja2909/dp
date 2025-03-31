@@ -2,7 +2,7 @@ import argparse
 
 from dp.utils.terraform.TFCloudCustom import TFCloudCustom
 from dp.utils.confs import confs
-from dp.utils.helper import get_env_variable
+from dp.utils.helper import get_env_variable, get_public_ip_address
 
 class InitialiseProject:
     def __init__(self):
@@ -97,19 +97,38 @@ class InitialiseProject:
         payload_workspace = {
             "data": {
                 "attributes": {
-                    "name": tf_session.get_workspace_name(),
-                    "file-triggers-enabled": True,
-                    "trigger-prefixes": ["./*"],
-                    "working-directory": "./setup",
-                    "vcs-repo": {
-                        "identifier": f"{get_env_variable(confs['github']['user']['name'])}/{get_env_variable(confs['github']['repository']['name'])}",
-                        "oauth-token-id": tf_session.get_github_oauth_token_id(),
-                        "branch": ""
-                    }
+                    "name": tf_session.get_workspace_name()
                 },
                 "type": "workspaces"
             }}
         tf_session.create_workspace(payload=payload_workspace)
+
+        # create workspace variables
+        payload_local_ip = {
+            "data": {
+                "type":"vars",
+                "attributes": {
+                    "key":"local_ip",
+                    "value":get_public_ip_address(),
+                    "description":"local ip address needed for firewall configs",
+                    "category":"terraform",
+                    "hcl":False,
+                    "sensitive":False
+                }
+            }}
+        tf_session.create_workspace_variable(payload=payload_local_ip)
+        payload_hcloud_token = {
+            "data": {
+                "type":"vars",
+                "attributes": {
+                    "key":"hcloud_token",
+                    "value":get_env_variable(confs['hetzner']['api_token']['name']),
+                    "description":"local ip address needed for firewall configs",
+                    "category":"terraform",
+                    "hcl":False,
+                    "sensitive":True
+                }
+            }}
 
 if __name__=='__main__':
     init_proj = InitialiseProject()
