@@ -17,23 +17,21 @@ Initial setup costs you roughly 27€ / month:
 - 8€ / month to run server in hetzner, 19€ / month for DigitalOcean database. (AWS s3 is free if you not have much data there)
 
 ## Prerequisites
-1. Fork the repository
-    - create new branch from the main
-    - checkout to new branch
-2. Install Python (if not having it already)
-3. Create Python virtual environment, instructions [here](docs/create_venv.md)
-4. install repo in editable state, to get import references work, instruction [here](docs/init_project.md)
-5. [init Terraform](docs/systems/init_terraform.md)
-6. [init hetzner](docs/systems//hetzner/init_hetzner.md)
-7. [init DigitalOcean](docs/systems/init_digital_ocean.md)
-8. [init AWS](docs/systems/init_aws.md)
+1. [init Github](docs/systems/init_github.md)
+2. [init Terraform](docs/systems/init_terraform.md)
+3. [init hetzner](docs/systems//hetzner/init_hetzner.md)
+4. [init DigitalOcean](docs/systems/init_digital_ocean.md)
+5. [init AWS](docs/systems/init_aws.md)
+6. Install Python (if not having it already)
+7. Fork github repo and create new feature branch (local) and checkout to that branch
+8. Create Python virtual environment, instructions [here](docs/create_venv.md)
+9. install repo in editable state, to get import references work, instruction [here](docs/init_project.md)
 
 ## Folder structure
 .github = folder to keep github workflow files
 docs = folder to keep all documentations of the project
 setup = only used when initialising the resources and maybe destroying them
 src = all datapipelines and db migrations there and dependencies related to them (more detailed in the docs)
-
 
 ## Set up
 ### Status
@@ -49,9 +47,9 @@ src = all datapipelines and db migrations there and dependencies related to them
 ---creates terraform organization and workspace with needed variables
 ---run terraform resources
 ---copies ssh keys to local
----create project folder
----clone repo in hetzner
----create ssh keys there
+---create project folder in remote server
+---clone repo in remote server
+---create ssh keys in remote server
 
 #### config remote ssh access
 - once remote server is created, copy the ssh keys from remote server to your local computer [here](docs/systems/hetzner/remote_connection_hetzner.md)

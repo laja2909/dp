@@ -22,6 +22,11 @@ confs = {
         }
     },
     'github':{
+        'api_token':{
+            'type':'LOCAL_ENV',
+            'name':'GH_TOKEN',
+            'description':'local environment variable to store github personal access token'
+        },
         'user':{
             'type':'LOCAL_ENV',
             'name':'GH_USER_NAME',

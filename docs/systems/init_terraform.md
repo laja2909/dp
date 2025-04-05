@@ -19,4 +19,3 @@ It should output the version you installed. If not, close terminal, then try aga
 - create account
 - create api token
     - save api token as "TF_TOKEN" environment variable
-- create Github App OAuth Token
