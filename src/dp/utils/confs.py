@@ -36,6 +36,16 @@ confs = {
             'type':'LOCAL_ENV',
             'name':'GH_REPOSITORY_NAME',
             'description':'local environment variable to store github repository name'
+        },
+        'tc_client_id':{
+            'type':'LOCAL_ENV',
+            'name':'GH_TC_CLIENT_ID',
+            'description':'local environment variable to store github OAuth client id for terraform cloud'
+        },
+        'tc_client_token':{
+            'type':'LOCAL_ENV',
+            'name':'GH_TC_CLIENT_TOKEN',
+            'description':'local environment variable to store github OAuth client token for terraform cloud'
         }
     },
     'hetzner':{

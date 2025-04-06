@@ -53,47 +53,6 @@ class GithubApi:
     
         return pem.decode('utf-8')
     
-    def create_github_app(self, payload):
-        """Create a new GitHub App in the specified organization"""
-        end_point = f"https://api.github.com/orgs/{self.get_user()}/apps"
-    
-        """
-        # Define the GitHub App properties
-        payload = {
-            "name": "Terraform Cloud App",
-            "url": "https://terraform.io",
-            "description": "GitHub App for Terraform Cloud integration",
-            "callback_url": "https://app.terraform.io/auth/github/callback",
-            "request_oauth_on_install": True,
-            "setup_on_update": True,
-            "public": False,
-            "webhook_active": False,
-            # Permissions required for Terraform Cloud
-            "permissions": {
-                "contents": "read",
-                "metadata": "read",
-                "pull_requests": "write",
-                "statuses": "write",
-                "workflows": "write",
-                "checks": "write",
-                "repository_hooks": "write"
-            }
-        }
-        """
-    
-        # Create the GitHub App
-        response = requests.post(end_point, headers=self.get_headers(), json=payload)
-    
-        if response.status_code != 201:
-            print(f"Error creating GitHub App: {response.status_code}")
-            print(response.text)
-            return None
-    
-        app_data = response.json()
-        print(f"Successfully created GitHub App: {app_data['name']} (ID: {app_data['id']})")
-    
-        return app_data
-    
     def create_jwt_token_from_local_key(self, file_name, app_id):
         with open(file_name, 'r') as key_file:
             private_key = key_file.read()

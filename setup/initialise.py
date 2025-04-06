@@ -18,34 +18,6 @@ class InitialiseProject:
         return gh_session
     
     def init_project(self):
-        # create github app for the terraform
-        gh_session = self.init_github_session()
-        payload_gh_app ={
-            "name": "Terraform Cloud App",
-            "url": "https://terraform.io",
-            "description": "GitHub App for Terraform Cloud integration",
-            "callback_url": "https://app.terraform.io/auth/github/callback",
-            "request_oauth_on_install": True,
-            "setup_on_update": True,
-            "public": False,
-            "webhook_active": False,
-            # Permissions required for Terraform Cloud
-            "permissions": {
-                "contents": "read",
-                "metadata": "read",
-                "pull_requests": "write",
-                "statuses": "write",
-                "workflows": "write",
-                "checks": "write",
-                "repository_hooks": "write"
-            }
-        }
-        gh_session.create_github_app(payload=payload_gh_app)
-        input('check if github app is created')
-        exit()
-
-
-
         # create terraform organization
         tf_session = self.init_terraform_session()
         payload_organization = {
@@ -57,6 +29,8 @@ class InitialiseProject:
                 }
             }}        
         tf_session.create_organization(payload=payload_organization)
+        
+
         
         payload_workspace = {
             "data": {
