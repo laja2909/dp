@@ -29,7 +29,9 @@ class InitialiseProject:
                 }
             }}        
         tf_session.create_organization(payload=payload_organization)
-        
+        # register github OAuth application to terraform cloud organization
+
+        #create terraform workspace with vcs provider defined above
 
         
         payload_workspace = {
