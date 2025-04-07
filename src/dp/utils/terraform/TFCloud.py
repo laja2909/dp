@@ -81,6 +81,12 @@ class TFCloud:
         """
         self.call_api('POST',end_point=end_point,payload=payload)
         #requests.request("POST", end_point, headers=self.get_header(),data=json.dumps(payload))
+    
+    def create_oauth_client(self,payload:dict):
+        end_point = f'https://app.terraform.io/api/v2/organizations/{self.get_organization_name()}/oauth-clients'
+        response = self.call_api('POST',end_point=end_point,payload=payload)
+        content = self.get_content_response(response=response)
+        return content
 
 
     #GET

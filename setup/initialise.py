@@ -30,6 +30,18 @@ class InitialiseProject:
             }}        
         tf_session.create_organization(payload=payload_organization)
         # register github OAuth application to terraform cloud organization
+        payload = {
+            "data": {
+                "type": "oauth-clients",
+                "attributes": {
+                    "name": "GitHub OAuth",
+                    "service-provider": "github",
+                    "client-id": get_env_variable(confs['github']['tc_client_id']['name']),
+                    "client-secret": get_env_variable(confs['github']['tc_client_token']['name'])
+                }
+            }}
+        tf_session.create_oauth_client(payload=payload)
+
 
         #create terraform workspace with vcs provider defined above
 
