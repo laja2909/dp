@@ -36,12 +36,13 @@ class InitialiseProject:
                 "attributes": {
                     "name": "GitHub OAuth",
                     "service-provider": "github",
-                    "client-id": get_env_variable(confs['github']['tc_client_id']['name']),
-                    "client-secret": get_env_variable(confs['github']['tc_client_token']['name'])
+                    "http-url": "https://github.com",
+                    "api-url": "https://api.github.com",
+                    "oauth-token-string": get_env_variable(confs['github']['tc_client_token']['name'])
                 }
             }}
-        tf_session.create_oauth_client(payload=payload)
-
+        print(tf_session.create_oauth_client(payload=payload))
+        exit()
 
         #create terraform workspace with vcs provider defined above
 
