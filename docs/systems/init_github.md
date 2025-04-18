@@ -2,6 +2,7 @@
 
 - You have github account created
 - Fork the repository
+- create personal access token
 - create github oauth application for terraform (this will allow us to use vcs provider flow in the terraform cloud)
     - in github go to settings -> applications -> new OAuth application:
         - specs: {"Application name":"Terraform Cloud",

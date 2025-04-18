@@ -28,7 +28,7 @@ class InitialiseProject:
                     "email": get_env_variable(confs['terraform']['email']['name'])
                 }
             }}        
-        tf_session.create_organization(payload=payload_organization)
+        #tf_session.create_organization(payload=payload_organization)
         # register github OAuth application to terraform cloud organization
         payload = {
             "data": {
@@ -38,28 +38,33 @@ class InitialiseProject:
                     "service-provider": "github",
                     "http-url": "https://github.com",
                     "api-url": "https://api.github.com",
-                    "oauth-token-string": get_env_variable(confs['github']['tc_client_token']['name'])
+                    #'key':get_env_variable(confs['github']['tc_client_id']['name']),
+                    #'secret':get_env_variable(confs['github']['tc_client_token']['name']),
+                    "oauth-token-string": get_env_variable(confs['github']['api_token']['name'])
                 }
             }}
-        print(tf_session.create_oauth_client(payload=payload))
-        exit()
+        #tf_session.create_oauth_client(payload=payload)
+        
+        github_client_id = tf_session.get_oauth_client_id_by_service_provider('github')
+        github_oauth_token_id = tf_session.get_oauth_token_id_by_client_id(github_client_id)
 
         #create terraform workspace with vcs provider defined above
-
-        
         payload_workspace = {
             "data": {
                 "attributes": {
-                    "name": tf_session.get_workspace_name()
+                    "name": tf_session.get_workspace_name(),
+                    "working-directory": "/setup",
+                    "vcs-repo": {
+                        "identifier":f"{get_env_variable(confs['github']['user']['name'])}/{get_env_variable(confs['github']['repository']['name'])}",
+                        "oauth-token-id": github_oauth_token_id,
+                        "branch": ""
+                    }
                 },
                 "type": "workspaces"
-            }}
-        
-        
-        """
-
-
-        tf_session.create_workspace(payload=payload_workspace)
+                }
+            }
+        #tf_session.create_workspace(payload=payload_workspace)
+        #exit()
 
         # create workspace variables
         payload_local_ip = {
@@ -88,6 +93,11 @@ class InitialiseProject:
                 }
             }}
         tf_session.create_workspace_variable(payload=payload_hcloud_token)
+        exit()
+
+        
+        """
+
 
         ## init resources 
         ##self.init_terraform_resources()
