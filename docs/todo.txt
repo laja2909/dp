@@ -1,10 +1,6 @@
----CHECK CLAUDE AI example!!
----Apparently github app is not possible to create via REST api, so we cannot automate that!
+- finalise vcp provider stuff in workspace creation (need to define pattern there to when apply runs)
 
-CONTINUE WITH THE terrafrom api stuff, we can automate the organization creation and workspace creation!
---almost done, need to test this and modify readme file. SO start from the scratch (delete everything from the terraform and lets see how we can set it up)
-----deleted everything, start from readme and terraform
----figure out github token stuff
+
 
 
 
