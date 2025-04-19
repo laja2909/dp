@@ -1,4 +1,5 @@
-- finalise vcp provider stuff in workspace creation (need to define pattern there to when apply runs)
+- status: we can now init terraform resource
+--modify readme file and structure it properly and figure out the next step
 
 
 
@@ -22,6 +23,7 @@ ALSO THINK ABOUT CREATING GLOBAL CONFS FILE FOR ALL NECESSARY VARIABLES!
 
 
 #DONE:
+- finalise vcp provider stuff in workspace creation (need to define pattern there to when apply runs)
 #git workflow
 --Need to configure .github/workflows/main.yml file
 ---steps:
