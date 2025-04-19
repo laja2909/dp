@@ -1,4 +1,5 @@
 import json
+import time
 
 import requests
 
@@ -248,7 +249,50 @@ class TFCloud:
         end_point=f'https://app.terraform.io/api/v2/oauth-tokens/{oauth_token_id}'
         self.call_api('DELETE',end_point=end_point)
         #requests.request("DELETE", end_point, headers=self.get_header())
-        
+    
+    def delete_resources_from_workspace(self):
+        payload = {
+            "data": {
+                "attributes": {
+                    "message": "Destroy resources in workspace",
+                    "is_destroy": True
+                },
+                "type":"runs",
+                "relationships": {
+                    "workspace": {
+                        "data": {
+                            "type": "workspaces",
+                            "id": self.get_workspace_id()
+                        }
+                    }
+                }
+            }
+        }
+        self.run_in_runs_end_point(payload=payload)
+
+    def delete_terraform_multiple_objects(self, objects:list):
+        valid_objects_to_destroy = {'resources':1,'workspace':2,'organization':3}
+        sorted_objects = sorted(objects, key=lambda x: valid_objects_to_destroy[x])
+
+        for object in sorted_objects:
+            if object not in valid_objects_to_destroy.keys():
+                raise Exception (f'object {object} is not valid object to destroy. Valid objects are: {valid_objects_to_destroy}')
+            else:
+                if object == 'resources':
+                    #1. destroy resources from workspace
+                    if self.has_workspace_resources_running():
+                        self.delete_resources_from_workspace()
+                        print('Resources destroyed')
+                        time.sleep(60)
+                    else:
+                        print('No resources running. Skip destruction')
+                ## delete workspace
+                elif object == 'workspace':
+                    self.delete_workspace()
+                    time.sleep(60)
+                ## delete organization
+                elif object == 'organization':
+                    self.delete_organization()
     ##RUN
     def run_in_runs_end_point(self,payload:dict):
         """
@@ -287,9 +331,13 @@ class TFCloud:
     def is_equal_to_variable_value(self, comparison_value:str,variable_name:str)->bool:
         variable_value = self.get_variable_value(variable_name)
         return comparison_value==variable_value
+    
+    def has_workspace_resources_running(self) -> bool:
+        workspace_id = self.get_workspace_id()
+        resources = self.get_resources_from_workspace(workspace_id)
+        return len(resources['data'])>0
 
-
-
+    
 if __name__=='__main__':
     tf_api = TFCloud()
     print(tf_api.get_oauth_client_id_by_service_provider('github'))
