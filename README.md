@@ -2,51 +2,30 @@
 Data platform project
 
 To define and run data pipelines with following tools:
-1. hetzner cloud server:
-- airflow to orchestrate dataflows
-2. DigitalOcean managed postgres database:
-- data storage
-3. AWS s3:
-- raw data storage
-- logging
-4. Terraform & Terraform cloud
-- to set up infrastacture
+- hetzner cloud server:
+    - airflow to orchestrate dataflows
+- Terraform & Terraform cloud
+    - to set up infrastacture
 
 **Note! This setup is not free, you are charged based on services above.**
-Initial setup costs you roughly 27€ / month:
-- 8€ / month to run server in hetzner, 19€ / month for DigitalOcean database. (AWS s3 is free if you not have much data there)
+Initial setup costs you roughly 8€ / month:
+- 8€ / month to run server in hetzner
 
 ## Prerequisites
-1. [init Github](docs/systems/init_github.md)
-2. [init Terraform](docs/systems/init_terraform.md)
-3. [init hetzner](docs/systems//hetzner/init_hetzner.md)
-4. [init DigitalOcean](docs/systems/init_digital_ocean.md)
-5. [init AWS](docs/systems/init_aws.md)
-6. Install Python (if not having it already)
-7. Fork github repo and create new feature branch (local) and checkout to that branch
-8. Create Python virtual environment, instructions [here](docs/create_venv.md)
-9. install repo in editable state, to get import references work, instruction [here](docs/init_project.md)
-
-## Folder structure
-.github = folder to keep github workflow files
-docs = folder to keep all documentations of the project
-setup = only used when initialising the resources and maybe destroying them
-src = all datapipelines and db migrations there and dependencies related to them (more detailed in the docs)
-
-## Set up
-### Status
-1. terraform installed and terraform cloud set up
-2. hetzner account created & project initialised & token created (cloud server)
-3. DigitalOcean account created (maybe not??)
-4. AWS account created and user with s3 access and aws cli
+- [init Terraform](docs/systems/init_terraform.md)
+- [init Github](docs/systems/init_github.md)
+- [init hetzner](docs/systems/hetzner/init_hetzner.md)
+- Python
+- Create Python virtual environment, instructions [here](docs/create_venv.md)
+- install repo in editable state, to get import references work, instruction [here](docs/init_project.md)
 
 ### Steps
 
-- go to confs file and check that you have added necessary local environment variables, you can change the "RAW" types the name that you like
+- go to confs.py file and check that you have added necessary local environment variables, you can change the "RAW" types the name that you like
 - run initialise.py from setup folder (Note! After this you resources are running and they are billable):
----creates terraform organization and workspace with needed variables
----run terraform resources
----copies ssh keys to local
+---creates terraform organization and workspace with required variables
+---applies terraform resources
+---copies ssh keys from hetzner server to local path (need for remote access to hetner server)
 ---create project folder in remote server
 ---clone repo in remote server
 ---create ssh keys in remote server
