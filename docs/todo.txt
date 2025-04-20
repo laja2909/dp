@@ -1,3 +1,5 @@
+-continue hetznerapi and remotessh classes
+
 - status: we can now init terraform resource
 --modify readme file and structure it properly and figure out the next step
 
