@@ -20,12 +20,14 @@ class RemoteSSH:
     def get_user(self):
         return self._user
 
-    def execute_via_private_key(self,private_key_path:Path, command:str):
+    def execute_via_private_key(self,command:str,private_key_path:str=confs['local']['ssh_path']['name'], 
+                                key_name:str=confs['local']['ssh_key_name']['name']):
         #create ssh client
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         
-        private_key = paramiko.RSAKey.from_private_key_file(private_key_path)
+        private_key_full_path = Path(get_env_variable(private_key_path)).joinpath(key_name)
+        private_key = paramiko.RSAKey.from_private_key_file(private_key_full_path)
         try:
             #connect
             ssh.connect(self.get_hostname(), self.get_port(), self.get_user(), pkey=private_key)

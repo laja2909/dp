@@ -1,6 +1,8 @@
 import argparse
 
 from dp.utils.terraform.TFCloudCustom import TFCloudCustom
+from dp.utils.remote.RemoteSSH import RemoteSSH
+from dp.utils.hetzner.HetznerApi import HetznerApi
 from Payloads import Payloads
 
 class ManageProject:
@@ -28,14 +30,37 @@ class ManageProject:
     def init_remote_server(self):
         tf_session = TFCloudCustom()
         # copy ssh keys from remote to local
-        tf_session.copy_ssh_keys_from_remote_to_local(ssh_resource_name='generic-ssh-key', key_name='id_hetzner')
+        #tf_session.copy_ssh_keys_from_remote_to_local(ssh_resource_name='generic-ssh-key')
+        
+        #variables for connecting to server
+        server_name='dp' # resource name in main.tf
+        hetz_api = HetznerApi()
+        ip = hetz_api.get_server_ipv4_by_name(server_name=server_name)
+        remote_user = 'root' # sign in as root user
+        port = 22 # we've opened port 22 for ssh
 
-        # create project folder
-        # clone repo
-        # generate ssh key in remote
+        # commands to run in remote
+        ## create project folder
+        ## clone repo
+        ## generate ssh key in remote
+        commands = [
+            'mkdir projects']#,
+            #'cd /projects && git clone <https path>',
+            #'cd /projects && ssh-keygen -t rsa -b 4096',
+            #'cd /projects && cat <path/to/public/key> >> ~/.ssh/authorized_keys']
+        
+        
+        # initialise connection
+        ssh = RemoteSSH(hostname=ip, port=port, user=remote_user)
+    
+        #run commands
+        for cmd in commands:
+            ssh.execute_via_private_key(command=cmd)
+
+
 
         # add secrets to github
-        pass
+        
         
     
 

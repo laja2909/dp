@@ -60,6 +60,11 @@ confs = {
             'type':'LOCAL_ENV',
             'name':'SSH_PATH',
             'description':'local environment variable to store default path of ssh keys'
+        },
+        'ssh_key_name':{
+            'type':'RAW',
+            'name':'id_hetzner',
+            'description':'defines the name of your local ssh key'
         }
     }
 }

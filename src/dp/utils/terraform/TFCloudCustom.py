@@ -56,7 +56,7 @@ class TFCloudCustom(TFCloud):
                 continue
         return ssh_key_dict
 
-    def copy_ssh_keys_from_remote_to_local(self,ssh_resource_name:str,key_name:str,
+    def copy_ssh_keys_from_remote_to_local(self,ssh_resource_name:str,key_name:str=confs['local']['ssh_key_name']['name'],
                                            name_of_ssh_path_env_variable:str=confs['local']['ssh_path']['name']) -> None:
         """
         copies ssh keys from state file and saves them to local folder
