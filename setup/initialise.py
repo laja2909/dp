@@ -1,9 +1,13 @@
 import argparse
 
+from Payloads import Payloads
 from dp.utils.terraform.TFCloudCustom import TFCloudCustom
 from dp.utils.remote.RemoteSSH import RemoteSSH
 from dp.utils.hetzner.HetznerApi import HetznerApi
-from Payloads import Payloads
+
+from dp.utils.confs import confs
+from dp.utils.helper import get_env_variable
+
 
 class ManageProject:
     def __init__(self):
@@ -30,7 +34,7 @@ class ManageProject:
     def init_remote_server(self):
         tf_session = TFCloudCustom()
         # copy ssh keys from remote to local
-        #tf_session.copy_ssh_keys_from_remote_to_local(ssh_resource_name='generic-ssh-key')
+        tf_session.copy_ssh_keys_from_remote_to_local(ssh_resource_name='generic-ssh-key')
         
         #variables for connecting to server
         server_name='dp' # resource name in main.tf
@@ -43,11 +47,12 @@ class ManageProject:
         ## create project folder
         ## clone repo
         ## generate ssh key in remote
+        https_github_repo = f"https://github.com/{get_env_variable(confs['github']['user']['name'])}/{get_env_variable(confs['github']['repository']['name'])}.git"
         commands = [
-            'mkdir projects']#,
-            #'cd /projects && git clone <https path>',
-            #'cd /projects && ssh-keygen -t rsa -b 4096',
-            #'cd /projects && cat <path/to/public/key> >> ~/.ssh/authorized_keys']
+            'mkdir projects',
+            f'cd ./projects && git clone {https_github_repo}',
+            'cd ./projects && ssh-keygen -t rsa -b 4096',
+            'cd ./projects && cat <path/to/public/key> >> ~/.ssh/authorized_keys']
         
         
         # initialise connection
@@ -56,7 +61,8 @@ class ManageProject:
         #run commands
         for cmd in commands:
             ssh.execute_via_private_key(command=cmd)
-
+        
+        print('all done')
 
 
         # add secrets to github

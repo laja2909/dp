@@ -1,4 +1,7 @@
 -initiliase.py add init resource stuff now that we have remotessh and hetznerapi done.
+---problem in init_remote_serve (freezes after cloning repo)
+-----Might be that git prompts you a git global stuff which we should just ignore, should we just create configs first before cloning or?
+
 
 
 - status: we can now init terraform resource

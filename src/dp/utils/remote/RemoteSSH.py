@@ -30,7 +30,7 @@ class RemoteSSH:
         private_key = paramiko.RSAKey.from_private_key_file(private_key_full_path)
         try:
             #connect
-            ssh.connect(self.get_hostname(), self.get_port(), self.get_user(), pkey=private_key)
+            ssh.connect(hostname=self.get_hostname(), port=self.get_port(), username=self.get_user(), pkey=private_key)
             # Execute the command
             stdin, stdout, stderr = ssh.exec_command(command)
             # Fetch output and errors
