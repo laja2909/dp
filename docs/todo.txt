@@ -1,5 +1,5 @@
-github api and secret and variable create to initialise.py
-also modify workflow file once variables are added to github.
+now, we have all init stuff set up.
+--destroy all and try to run the project from the start
 
 
 - status: we can now init terraform resource
@@ -27,6 +27,8 @@ ALSO THINK ABOUT CREATING GLOBAL CONFS FILE FOR ALL NECESSARY VARIABLES!
 
 
 #DONE:
+github api and secret and variable create to initialise.py
+also modify workflow file once variables are added to github.
 -initiliase.py add init resource stuff now that we have remotessh and hetznerapi done.
 ---problem in init_remote_serve (freezes after cloning repo)
 -----Might be that git prompts you a git global stuff which we should just ignore, should we just create configs first before cloning or?
