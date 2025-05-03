@@ -4,6 +4,7 @@ from Payloads import Payloads
 from dp.utils.terraform.TFCloudCustom import TFCloudCustom
 from dp.utils.remote.RemoteSSH import RemoteSSH
 from dp.utils.hetzner.HetznerApi import HetznerApi
+from dp.utils.github.GithubApi import GithubApi
 
 from dp.utils.confs import confs
 from dp.utils.helper import get_env_variable
@@ -40,7 +41,7 @@ class ManageProject:
         server_name='dp' # resource name in main.tf
         hetz_api = HetznerApi()
         ip = hetz_api.get_server_ipv4_by_name(server_name=server_name)
-        remote_user = 'root' # sign in as root user
+        remote_user = get_env_variable(confs['remote']['user']['name']) # sign in as root user
         port = 22 # we've opened port 22 for ssh
 
         # commands to run in remote
@@ -64,10 +65,39 @@ class ManageProject:
         for cmd in commands:
             ssh.execute_via_private_key(command=cmd)
         
-        print('all done')
+    def init_github(self):
+        git = GithubApi()
+        
+        git_vars = {'HETZ_MAIN_SERVER_NAME':'dp',
+                    'MAIN_BRANCH':'main',
+                    'WORK_DIR_IN_REMOTE':'projects'}
 
+        #create github variables
+        """
+        for key,value in git_vars.items():
+            git.create_repo_variable(var_name=key, var_value=value)
+        """
+        #create github secrets
+        ##variables for connecting to server
+        server_name='dp' # resource name in main.tf
+        hetz_api = HetznerApi()
+        ip = hetz_api.get_server_ipv4_by_name(server_name=server_name)
+        remote_user = get_env_variable(confs['remote']['user']['name'])
+        port = 22 # we've opened port 22 for ssh
 
-        # add secrets to github
+        ssh = RemoteSSH(hostname=ip, port=port, user=remote_user)
+        private_key_content = ssh.get_file_content_via_sftp(target_file_path='/root/.ssh/id_rsa')
+        
+        git_secrets = {'HETZ_TOKEN':get_env_variable(confs['hetzner']['api_token']['name']),
+                       'SSH_HOST':ip,
+                       'SSH_PRIVATE_KEY':private_key_content,
+                       'SSH_USER':get_env_variable(confs['remote']['user']['name'])}
+        
+        for key,value in git_secrets.items():
+            git.create_repo_secret(secret_name=key, secret_value=value)
+        
+        print('done!')
+
         
         
     
@@ -76,7 +106,11 @@ if __name__=='__main__':
     init_proj = ManageProject()
 
     parser = argparse.ArgumentParser(description="Run a specific function.")
-    parser.add_argument("function", choices=["init_terraform_resources", "init_remote_server","destroy_resources", "destroy_terraform_resources_workspace"])
+    parser.add_argument("function", choices=["init_terraform_resources",
+                                             "init_remote_server",
+                                             "init_github",
+                                             "destroy_resources",
+                                             "destroy_terraform_resources_workspace"])
 
     args = parser.parse_args()
 
@@ -84,6 +118,8 @@ if __name__=='__main__':
         init_proj.init_terraform_resources()
     elif args.function == "init_remote_server":
         init_proj.init_remote_server()
+    elif args.function == "init_github":
+        init_proj.init_github()
     elif args.function == "destroy_resources":
         tf_session = TFCloudCustom()
         tf_session.delete_resources_from_workspace()

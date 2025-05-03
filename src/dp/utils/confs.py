@@ -66,5 +66,13 @@ confs = {
             'name':'id_hetzner',
             'description':'defines the name of your local ssh key'
         }
+    },
+    'remote':{
+        'user':{
+            'type':'LOCAL_ENV',
+            'name':'REMOTE_USER',
+            'description': 'default user in the remote server, by default its root'
+        }
+
     }
 }

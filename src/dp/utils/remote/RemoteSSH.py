@@ -45,6 +45,28 @@ class RemoteSSH:
                 print(error)
         finally:
             ssh.close()
+    
+    def get_file_content_via_sftp(self,target_file_path:str,
+                                  private_key_path:str=confs['local']['ssh_path']['name'], 
+                                  key_name:str=confs['local']['ssh_key_name']['name']):
+        #create ssh client
+        ssh = paramiko.SSHClient()
+        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        private_key_full_path = Path(get_env_variable(private_key_path)).joinpath(key_name)
+        private_key = paramiko.RSAKey.from_private_key_file(private_key_full_path)
+
+        try:
+            ssh.connect(hostname=self.get_hostname(), port=self.get_port(), username=self.get_user(), pkey=private_key)
+            try:
+                sftp = ssh.open_sftp()
+                with sftp.file(target_file_path, 'r') as remote_file:
+                    content = remote_file.read().decode('utf-8')
+            finally:
+                sftp.close()
+        finally:
+            ssh.close()
+        return content
+
 
 if __name__=='__main__':
     hetz_api = HetznerApi()

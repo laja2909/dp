@@ -25,7 +25,7 @@ jobs:
       run: |
         SERVER_ID=$(curl \
         -H "Authorization: Bearer ${{ secrets.HETZ_TOKEN }}" \
-        'https://api.hetzner.cloud/v1/servers?name=${{ secrets.HETZ_SERVER_NAME }}' | jq '.servers[0].id')
+        'https://api.hetzner.cloud/v1/servers?name=${{ vars.HETZ_MAIN_SERVER_NAME }}' | jq '.servers[0].id')
         echo "SERVER_ID=$SERVER_ID" >> $GITHUB_ENV
         
     - name: set firewall name
@@ -52,7 +52,7 @@ jobs:
         ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
         
     - name: update repository in hetzner server
-      run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }} && git checkout ${{ secrets.MAIN_BRANCH }} && git pull && exit"
+      run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ vars.WORK_DIR_IN_REMOTE }} && git checkout ${{ vars.MAIN_BRANCH }} && git pull && exit"
 
     - name: get firewall resource hetzner id
       id: get_firewall_id
