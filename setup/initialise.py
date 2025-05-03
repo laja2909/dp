@@ -50,9 +50,11 @@ class ManageProject:
         https_github_repo = f"https://github.com/{get_env_variable(confs['github']['user']['name'])}/{get_env_variable(confs['github']['repository']['name'])}.git"
         commands = [
             'mkdir projects',
+            #'git config --global user.name "dp"',
+            #'git config --global user.email dp@gmail.com',
             f'cd ./projects && git clone {https_github_repo}',
-            'cd ./projects && ssh-keygen -t rsa -b 4096',
-            'cd ./projects && cat <path/to/public/key> >> ~/.ssh/authorized_keys']
+            'cd ./projects && ssh-keygen -t rsa -b 4096 -N "" -f ~/.ssh/id_rsa <<<y >/dev/null 2>&1',
+            'cd ./projects && cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys']
         
         
         # initialise connection
