@@ -15,7 +15,7 @@ Initial setup costs you roughly 8€ / month:
 - [init Terraform](docs/systems/init_terraform.md)
 - [init Github](docs/systems/init_github.md)
 - [init hetzner](docs/systems/hetzner/init_hetzner.md)
-- Python
+- Python installed
 - Create Python virtual environment, instructions [here](docs/create_venv.md)
 - install repo in editable state, to get import references work, instruction [here](docs/init_project.md)
 
