@@ -1,6 +1,6 @@
 import argparse
 
-from Payloads import Payloads
+from dp.setup.Payloads import Payloads
 from dp.utils.terraform.TFCloudCustom import TFCloudCustom
 from dp.utils.remote.RemoteSSH import RemoteSSH
 from dp.utils.hetzner.HetznerApi import HetznerApi
