@@ -1,3 +1,6 @@
+We changed the structure of the project.
+---modify confs_new and check chatgpt example of how to use external variables in terraform file.
+---add necessary variables in the confs_new and then go through initialise.py that everything works and also all classes and their methods.
 now, we have all init stuff set up.
 --destroy all and try to run the project from the start
 
