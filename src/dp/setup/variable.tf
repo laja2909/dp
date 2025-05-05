@@ -30,3 +30,9 @@ variable "server_type" {
     default = "cx32"
 }
 
+variable "server_name" {
+    description = "name of the server"
+    type = string
+    default = "main_server"
+}
+

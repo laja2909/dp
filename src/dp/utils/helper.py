@@ -3,7 +3,7 @@ import socket
 
 import requests
 
-from dp.utils.confs_new import *
+from dp.confs_new import *
 
 def get_env_variable(name):
     try:
