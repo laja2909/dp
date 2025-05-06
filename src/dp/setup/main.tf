@@ -25,7 +25,7 @@ resource "hcloud_ssh_key" "main" {
   public_key = tls_private_key.generic-ssh-key.public_key_openssh
 }
 
-resource "hcloud_firewall" "myfirewall" {
+resource "hcloud_firewall" "dp-firewall" {
   name = "my-firewall"
   rule {
     direction = "in"
@@ -47,13 +47,13 @@ resource "hcloud_firewall" "myfirewall" {
 
 }
 
-resource "hcloud_server" "dp" {
+resource "hcloud_server" "main_server" {
   name         = var.server_name
   location     = var.server_location
   image        = var.server_image
   server_type  = var.server_type
   ssh_keys     = [hcloud_ssh_key.main.name]
-  firewall_ids = [hcloud_firewall.myfirewall.id]
+  firewall_ids = [hcloud_firewall.dp-firewall.id]
   public_net {
     ipv4_enabled = true
     ipv6_enabled = true
