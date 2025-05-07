@@ -106,7 +106,7 @@
         "ssh_path_name":{
             "type":"LOCAL_ENV",
             "name":"REMOTE_SSH_PATH",
-            "description":"remote ssh path to which ssh keys are stored"
+            "description":"remote ssh path to which ssh keys are stored. you can use ~/.ssh for default"
         }
     }
 
