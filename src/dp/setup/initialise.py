@@ -2,14 +2,12 @@ import json
 from pathlib import Path
 import argparse
 
-
 from dp.setup.Payloads import Payloads
 from dp.utils.terraform.TFCloudCustom import TFCloudCustom
 from dp.utils.remote.RemoteSSH import RemoteSSH
 from dp.utils.hetzner.HetznerApi import HetznerApi
 from dp.utils.github.GithubApi import GithubApi
 
-from dp.utils.confs import confs
 from dp.utils.helper import get_global_confs
 
 
@@ -26,23 +24,26 @@ class ManageProject:
     def init_terraform_resources(self):
         confs = self.get_config()
         # create terraform organization
-        tf_session = TFCloudCustom()
-        payloads = Payloads()
-        payloads_init = payloads.init_payloads()
+        tf_cloud = TFCloudCustom(token=confs['terraform_api_token'],
+                                 organization=confs['terraform_organization'],
+                                 workspace=confs['terraform_workspace'])
 
-        tf_session.create_organization(payload=payloads_init['organization'])
-        tf_session.create_oauth_client(payload=payloads_init['vcp'])
-        
-        tf_session.create_workspace(payload=payloads_init['workspace'])
+        terraform_payloads = Payloads(tf_cloud, confs)
+        payloads_init = terraform_payloads.init_payloads()
 
-        tf_session.create_workspace_variable(payload=payloads_init['local_ip'])
-        tf_session.create_workspace_variable(payload=payloads_init['hcloud_token'])
+        tf_cloud.create_organization(payload=payloads_init['organization'])
+        tf_cloud.create_oauth_client(payload=payloads_init['vcp'])
+        tf_cloud.create_workspace(payload=payloads_init['workspace'])
 
-        payload_init_tf_resources = payloads.init_tf_resource_payload()
+        tf_cloud.create_workspace_variable(payload=payloads_init['local_ip'])
+        tf_cloud.create_workspace_variable(payload=payloads_init['hcloud_token'])
+
+        payload_init_tf_resources = terraform_payloads.init_tf_resource_payload()
     
-        tf_session.run_in_runs_end_point(payload=payload_init_tf_resources)
+        tf_cloud.run_in_runs_end_point(payload=payload_init_tf_resources)
 
     def init_remote_server(self):
+        ##CONTINUE HERE!!
         tf_session = TFCloudCustom()
         # copy ssh keys from remote to local
         tf_session.copy_ssh_keys_from_remote_to_local(ssh_resource_name='generic-ssh-key')

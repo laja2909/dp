@@ -48,6 +48,6 @@ def get_global_confs(file_path:str):
 
 
 if __name__ == '__main__':
-    path_to_confs = Path(__file__).parent.parent.joinpath('confs_new.json')
-    get_global_confs(path_to_confs.as_posix())
+    path_to_confs = Path(__file__).parent.parent.joinpath('confs.json')
+    print(get_global_confs(path_to_confs.as_posix()))
     #print(path_to_confs)
