@@ -17,7 +17,7 @@ class ManageProject:
     def __init__(self, file_path_to_config_file:str=Path(__file__).parent.joinpath('confs.json').as_posix()):
         self._config = get_global_confs(file_path_to_config_file)
     
-    def set_config(self,file_path_to_config_file:str=Path(__file__).parent.joinpath('confs.json').as_posix()):
+    def set_config(self,file_path_to_config_file:str):
         self._config = get_global_confs(file_path=file_path_to_config_file)
 
     def get_config(self) -> json:
