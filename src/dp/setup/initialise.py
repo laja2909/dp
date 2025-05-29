@@ -1,4 +1,7 @@
+import json
+from pathlib import Path
 import argparse
+
 
 from dp.setup.Payloads import Payloads
 from dp.utils.terraform.TFCloudCustom import TFCloudCustom
@@ -7,14 +10,21 @@ from dp.utils.hetzner.HetznerApi import HetznerApi
 from dp.utils.github.GithubApi import GithubApi
 
 from dp.utils.confs import confs
-from dp.utils.helper import get_env_variable
+from dp.utils.helper import get_global_confs
 
 
 class ManageProject:
-    def __init__(self):
-        pass
+    def __init__(self, file_path_to_config_file:str=Path(__file__).parent.joinpath('confs.json').as_posix()):
+        self._config = get_global_confs(file_path_to_config_file)
+    
+    def set_config(self,file_path_to_config_file:str=Path(__file__).parent.joinpath('confs.json').as_posix()):
+        self._config = get_global_confs(file_path=file_path_to_config_file)
+
+    def get_config(self) -> json:
+        return self._config
     
     def init_terraform_resources(self):
+        confs = self.get_config()
         # create terraform organization
         tf_session = TFCloudCustom()
         payloads = Payloads()

@@ -42,7 +42,7 @@ def get_global_confs(file_path:str):
             else:
                 raise Exception('Invalid variable type')
             flattened_data.update({name_of_key:value_of_key})
-    print(flattened_data)
+    return flattened_data
     
                     
 

@@ -2,8 +2,6 @@ import argparse
 from pathlib import Path
 
 from dp.utils.terraform.TFCloud import TFCloud
-
-from dp.utils.confs import confs
 from dp.utils.helper import get_public_ip_address, write_files_to_local, get_env_variable
 
 class TFCloudCustom(TFCloud):
@@ -13,10 +11,8 @@ class TFCloudCustom(TFCloud):
 
     
     """
-    def __init__(self,token_name:str=confs['terraform']['api_token']['name'],
-                 organization:str=confs['terraform']['organization']['name'],
-                 workspace:str=confs['terraform']['workspace']['name']):
-        super().__init__(token_name,organization,workspace)
+    def __init__(self,token:str,organization:str,workspace:str):
+        super().__init__(token,organization,workspace)
     
     def change_local_ip_variable_to_current_public_ip(self,tf_local_ip_variable_name:str):
         # check if local ip variable is the same as current public ip address
@@ -56,8 +52,7 @@ class TFCloudCustom(TFCloud):
                 continue
         return ssh_key_dict
 
-    def copy_ssh_keys_from_remote_to_local(self,ssh_resource_name:str,key_name:str=confs['local']['ssh_key_name']['name'],
-                                           name_of_ssh_path_env_variable:str=confs['local']['ssh_path']['name']) -> None:
+    def copy_ssh_keys_from_remote_to_local(self,ssh_resource_name:str,key_name:str,name_of_ssh_path_env_variable:str) -> None:
         """
         copies ssh keys from state file and saves them to local folder
         """
