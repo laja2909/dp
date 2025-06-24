@@ -83,7 +83,18 @@
             "type":"RAW",
             "name":"dp-firewall",
             "description":"name for firewall policy"
+        },
+        "firewall_ssh_port":{
+            "type":"RAW",
+            "name":"22",
+            "description":"name for firewall policy"
+        },
+        "firewall_airflow_port":{
+            "type":"RAW",
+            "name":"8080",
+            "description":"name for firewall policy"
         }
+
     },
     "local": {
         "ssh_path":{
@@ -106,6 +117,11 @@
         "ssh_path_name":{
             "type":"LOCAL_ENV",
             "name":"REMOTE_SSH_PATH",
+            "description":"remote ssh path to which ssh keys are stored. you can use ~/.ssh for default"
+        },
+        "root_folder_name":{
+            "type":"RAW",
+            "name":"projects",
             "description":"remote ssh path to which ssh keys are stored. you can use ~/.ssh for default"
         }
     }

@@ -39,29 +39,29 @@ class TFCloudCustom(TFCloud):
             }}
             self.update_variable_value(variable_name=tf_local_ip_variable_name,payload=payload)
 
-    def get_ssh_keys(self,ssh_resource_name:str) -> dict:
+    def get_tls_ssh_keys(self) -> dict:
         ssh_key_dict = {}
         latest_state_version_id = self.get_latest_state_version_id()
         state_file_content = self.get_content_of_state_version(latest_state_version_id)
 
         for ind,value in enumerate(state_file_content['values']['root_module']['resources']):
-            if value['name']==ssh_resource_name:
+            if value['type']=='tls_private_key':
                 ssh_key_dict['private_key'] = value['values']['private_key_openssh']
                 ssh_key_dict['public_key'] = value['values']['public_key_openssh']
             else:
                 continue
         return ssh_key_dict
 
-    def copy_ssh_keys_from_remote_to_local(self,ssh_resource_name:str,key_name:str,name_of_ssh_path_env_variable:str) -> None:
+    def copy_tls_ssh_keys_from_remote_to_local(self,to_key_name:str,to_ssh_path_name:str) -> None:
         """
         copies ssh keys from state file and saves them to local folder
         """
-        ssh_path = Path(get_env_variable(name_of_ssh_path_env_variable))
-        private_key_path = ssh_path.joinpath(key_name)
-        public_key_path = ssh_path.joinpath(key_name+'.pub')
+        ssh_path = Path(to_ssh_path_name)
+        private_key_path = ssh_path.joinpath(to_key_name)
+        public_key_path = ssh_path.joinpath(to_key_name+'.pub')
 
         # get ssh keys
-        ssh_keys = self.get_ssh_keys(ssh_resource_name)
+        ssh_keys = self.get_tls_ssh_keys()
         #copy keys to local
         write_files_to_local(ssh_keys['private_key'],private_key_path)
         write_files_to_local(ssh_keys['public_key'],public_key_path)

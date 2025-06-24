@@ -1,4 +1,9 @@
 
+#configs
+data "external" "config" {
+  program = ["python3", "${path.module}/read_config_in_tf_main.py"]
+}
+
 # hetzner setup
 
 terraform {
@@ -21,16 +26,16 @@ resource "tls_private_key" "generic-ssh-key" {
 
 
 resource "hcloud_ssh_key" "main" {
-  name       = "primary-ssh-key"
+  name       = data.external.config.result["hetzner_ssh_key_name"]
   public_key = tls_private_key.generic-ssh-key.public_key_openssh
 }
 
 resource "hcloud_firewall" "dp-firewall" {
-  name = "my-firewall"
+  name = data.external.config.result["hetzner_firewall_name"]
   rule {
     direction = "in"
     protocol  = "tcp"
-    port = "22"
+    port = data.external.config.result["hetzner_firewall_ssh_port"]
     source_ips = [
       var.local_ip
     ]
@@ -39,7 +44,7 @@ resource "hcloud_firewall" "dp-firewall" {
   rule {
     direction = "in"
     protocol  = "tcp"
-    port      = "8080"
+    port      = data.external.config.result["hetzner_firewall_airflow_port"]
     source_ips = [
       var.local_ip
     ]
@@ -48,10 +53,10 @@ resource "hcloud_firewall" "dp-firewall" {
 }
 
 resource "hcloud_server" "main_server" {
-  name         = var.server_name
-  location     = var.server_location
-  image        = var.server_image
-  server_type  = var.server_type
+  name         = data.external.config.result["hetzner_main_server_name"]
+  location     = data.external.config.result["hetzner_main_server_location"]
+  image        = data.external.config.result["hetzner_main_server_image"]
+  server_type  = data.external.config.result["hetzner_main_server_type"]
   ssh_keys     = [hcloud_ssh_key.main.name]
   firewall_ids = [hcloud_firewall.dp-firewall.id]
   public_net {

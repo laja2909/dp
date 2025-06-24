@@ -22,13 +22,11 @@ class ManageProject:
         return self._config
     
     def init_terraform_resources(self):
-        confs = self.get_config()
-        # create terraform organization
-        tf_cloud = TFCloudCustom(token=confs['terraform_api_token'],
-                                 organization=confs['terraform_organization'],
-                                 workspace=confs['terraform_workspace'])
+        tf_cloud = TFCloudCustom(token=self.get_config()['terraform_api_token'],
+                                 organization=self.get_config()['terraform_organization'],
+                                 workspace=self.get_config()['terraform_workspace'])
 
-        terraform_payloads = Payloads(tf_cloud, confs)
+        terraform_payloads = Payloads(tf_cloud, self.get_config())
         payloads_init = terraform_payloads.init_payloads()
 
         tf_cloud.create_organization(payload=payloads_init['organization'])
@@ -43,34 +41,34 @@ class ManageProject:
         tf_cloud.run_in_runs_end_point(payload=payload_init_tf_resources)
 
     def init_remote_server(self):
-        ##CONTINUE HERE!!
-        tf_session = TFCloudCustom()
+        tf_cloud = TFCloudCustom(token=self.get_config()['terraform_api_token'],
+                            organization=self.get_config()['terraform_organization'],
+                            workspace=self.get_config()['terraform_workspace'])
+
         # copy ssh keys from remote to local
-        tf_session.copy_ssh_keys_from_remote_to_local(ssh_resource_name='generic-ssh-key')
+        tf_cloud.copy_tls_ssh_keys_from_remote_to_local(to_key_name=self.get_config()['local_ssh_key_name'],
+                                                        to_ssh_path_name=self.get_config()['local_ssh_path'])
         
         #variables for connecting to server
-        server_name='dp' # resource name in main.tf
         hetz_api = HetznerApi()
-        ip = hetz_api.get_server_ipv4_by_name(server_name=server_name)
-        remote_user = get_env_variable(confs['remote']['user']['name']) # sign in as root user
-        port = 22 # we've opened port 22 for ssh
+        ip = hetz_api.get_server_ipv4_by_name(server_name=self.get_config()['hetzner_main_server_name'])
 
         # commands to run in remote
         ## create project folder
         ## clone repo
         ## generate ssh key in remote
-        https_github_repo = f"https://github.com/{get_env_variable(confs['github']['user']['name'])}/{get_env_variable(confs['github']['repository']['name'])}.git"
+        https_github_repo = f"https://github.com/{self.get_config()['github_user']}/{self.get_config()['github_repository']}.git"
         commands = [
-            'mkdir projects',
-            #'git config --global user.name "dp"',
-            #'git config --global user.email dp@gmail.com',
-            f'cd ./projects && git clone {https_github_repo}',
-            'cd ./projects && ssh-keygen -t rsa -b 4096 -N "" -f ~/.ssh/id_rsa <<<y >/dev/null 2>&1',
-            'cd ./projects && cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys']
+            f'mkdir {self.get_config()['remote_root_folder_name']}',
+            f'cd ./{self.get_config()['remote_root_folder_name']} && git clone {https_github_repo}',
+            f'cd ./{self.get_config()['remote_root_folder_name']} && ssh-keygen -t rsa -b 4096 -N "" -f ~/.ssh/id_rsa <<<y >/dev/null 2>&1',
+            f'cd ./{self.get_config()['remote_root_folder_name']} && cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys']
         
         
         # initialise connection
-        ssh = RemoteSSH(hostname=ip, port=port, user=remote_user)
+        ssh = RemoteSSH(hostname=ip,
+                        port=self.get_config()['hetzner_firewall_ssh_port'],
+                        user=self.get_config()['remote_user'])
     
         #run commands
         for cmd in commands:
@@ -79,30 +77,23 @@ class ManageProject:
     def init_github(self):
         git = GithubApi()
         
-        git_vars = {'HETZ_MAIN_SERVER_NAME':'dp',
+        git_vars = {'HETZ_MAIN_SERVER_NAME':self.get_config()['hetzner_main_server_name'],
                     'MAIN_BRANCH':'main',
                     'WORK_DIR_IN_REMOTE':'projects'}
 
-        #create github variables
-        """
-        for key,value in git_vars.items():
-            git.create_repo_variable(var_name=key, var_value=value)
-        """
         #create github secrets
-        ##variables for connecting to server
-        server_name='dp' # resource name in main.tf
         hetz_api = HetznerApi()
-        ip = hetz_api.get_server_ipv4_by_name(server_name=server_name)
-        remote_user = get_env_variable(confs['remote']['user']['name'])
-        port = 22 # we've opened port 22 for ssh
+        ip = hetz_api.get_server_ipv4_by_name(server_name=self.get_config()['hetzner_main_server_name'])
 
-        ssh = RemoteSSH(hostname=ip, port=port, user=remote_user)
-        private_key_content = ssh.get_file_content_via_sftp(target_file_path='/root/.ssh/id_rsa')
+        ssh = RemoteSSH(hostname=ip,
+                        port=self.get_config()['hetzner_firewall_ssh_port'], 
+                        user=self.get_config()['remote_user'])
+        private_key_content = ssh.get_file_content_via_sftp(target_file_path=f'/{self.get_config()['remote_user']}/.ssh/id_rsa')
         
-        git_secrets = {'HETZ_TOKEN':get_env_variable(confs['hetzner']['api_token']['name']),
+        git_secrets = {'HETZ_TOKEN':self.get_config()['hetzner_api_token'],
                        'SSH_HOST':ip,
                        'SSH_PRIVATE_KEY':private_key_content,
-                       'SSH_USER':get_env_variable(confs['remote']['user']['name'])}
+                       'SSH_USER':self.get_config()['remote_user']}
         
         for key,value in git_secrets.items():
             git.create_repo_secret(secret_name=key, secret_value=value)
