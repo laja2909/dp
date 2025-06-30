@@ -39,6 +39,10 @@ class ManageProject:
         tf_cloud.create_workspace_variable(payload=payload_rest['hcloud_token'])
         
         payload_init_tf_resources = terraform_payloads.init_tf_resource_payload()
+
+        #make sure terraform vars are created
+        with open("terraform.tfvars.json","w") as f:
+            json.dump(self.get_config(),f)
         tf_cloud.run_in_runs_end_point(payload=payload_init_tf_resources)
 
     def init_remote_server(self):
