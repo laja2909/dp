@@ -52,9 +52,9 @@ class Payloads:
         "data": {
             "attributes": {
                 "name": config_variables['terraform_workspace'],
-                "working-directory": "/setup",
+                "working-directory": "/src/setup",
                 "execution-mode": "remote",
-                "trigger-prefixes": ["/setup"],
+                "trigger-prefixes": ["/src/setup"],
                 "auto-apply":True,
                 "vcs-repo": {
                     "identifier":f"{config_variables['github_user']}/{config_variables['github_repository']}",
