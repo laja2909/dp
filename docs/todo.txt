@@ -1,3 +1,25 @@
+We changed the structure of the project.
+---modify confs_new and check chatgpt example of how to use external variables in terraform file.
+-----modified, need to check the chatgpt example next
+---add necessary variables in the confs_new and then go through initialise.py that everything works and also all classes and their methods.
+now, we have all init stuff set up.
+--destroy all and try to run the project from the start
+
+
+- status: we can now init terraform resource
+--modify readme file and structure it properly and figure out the next step
+
+
+
+
+
+#Problem:
+--now that we have workflow in main branch. What about if we want to setup all resources again. If we now follow up the setup we need to merge our dev to main and then workflow stars which will fail!
+----Need to do some logic so that all terraform stuff needs to be loaded first before running our workflow.
+----Also in terraform setup we need to mkdir and clone the repo and all that stuff.
+CONTINUE WITH README SETUP SET
+ALSO THINK ABOUT CREATING GLOBAL CONFS FILE FOR ALL NECESSARY VARIABLES!
+
 
 # airflow is now installed
 --need to figure out how dags stuff
@@ -9,6 +31,23 @@
 
 
 #DONE:
+github api and secret and variable create to initialise.py
+also modify workflow file once variables are added to github.
+-initiliase.py add init resource stuff now that we have remotessh and hetznerapi done.
+---problem in init_remote_serve (freezes after cloning repo)
+-----Might be that git prompts you a git global stuff which we should just ignore, should we just create configs first before cloning or?
+
+-continue hetznerapi and remotessh classes
+- finalise vcp provider stuff in workspace creation (need to define pattern there to when apply runs)
+#git workflow
+--Need to configure .github/workflows/main.yml file
+---steps:
+----get runner ip
+----give temporary access to remote server for that ip
+----do the ssh tricks
+----remove the ip from the firewall
+----if any errors occur in the workflow we need to remove the ip from the firewall settings still.
+
 # Install airflow:
 --Test kubernetes and helm chart installation (when installing kubernetes, check cpu usage of the hetzner server)
 ----This was not due to kubernetes and helm set up, this was due to vscode setting ~"search.symlink"
