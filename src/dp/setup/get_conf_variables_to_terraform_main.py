@@ -1,4 +1,8 @@
 from pathlib import Path
+import sys
+import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 from dp.utils.helper import get_global_confs
 
 def read_confs():
