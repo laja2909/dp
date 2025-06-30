@@ -1,7 +1,7 @@
 
 #configs
 data "external" "config" {
-  program = ["python", "get_conf_variables_to_terraform_main.py"]
+  program = ["python3", "get_conf_variables_to_terraform_main.py"]
 }
 
 # hetzner setup
