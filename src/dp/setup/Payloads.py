@@ -5,10 +5,10 @@ from dp.utils.helper import get_public_ip_address
 
 
 class Payloads:
-    def __init__(self):
-        pass
+    def __init__(self, tf_instance:TFCloudCustom):
+        self.terraform_cloud_instance = tf_instance
 
-    def init_payloads(self, tf_instance:TFCloudCustom, config_variables:json):
+    def init_payload_organization(self,config_variables:json):
 
         # to create organization
         payload_organization = {
@@ -19,7 +19,12 @@ class Payloads:
                     "email": config_variables['terraform_email']
                 }
             }}
+        payloads = {"organization":payload_organization
+                }
+        return payloads
     
+    def init_payload_github_client(self,config_variables:json):
+
         #To register github as vcp
         payload_vcp = {
         "data": {
@@ -32,10 +37,16 @@ class Payloads:
                 "oauth-token-string": config_variables['github_api_token']
             }
         }}
+        payloads = {"vcp":payload_vcp
+                }
+        return payloads
+     
+    def init_payload_rest(self,config_variables:json):
+
 
         # to create workspace
-        github_client_id = tf_instance.get_oauth_client_id_by_service_provider('github')
-        github_oauth_token_id = tf_instance.get_oauth_token_id_by_client_id(github_client_id)
+        github_client_id = self.terraform_cloud_instance.get_oauth_client_id_by_service_provider('github')
+        github_oauth_token_id = self.terraform_cloud_instance.get_oauth_token_id_by_client_id(github_client_id)
         
         payload_workspace = {
         "data": {
@@ -83,16 +94,14 @@ class Payloads:
             }
         }}
 
-        payloads = {"organization":payload_organization,
-                    "vcp":payload_vcp,
-                    "workspace":payload_workspace,
+        payloads = {"workspace":payload_workspace,
                     "local_ip":payload_local_ip,
                     "hcloud_token":payload_hcloud_token
                 }
         return payloads
 
     
-    def init_tf_resource_payload(self, tf_instance:TFCloudCustom):
+    def init_tf_resource_payload(self):
         payload_init_tf_resources = {
             "data": {
                 "attributes": {
@@ -103,7 +112,7 @@ class Payloads:
                 "workspace": {
                     "data": {
                         "type": "workspaces",
-                        "id": tf_instance.get_workspace_id()
+                        "id": self.terraform_cloud_instance.get_workspace_id()
                     }
                 }
             }

@@ -61,7 +61,7 @@
         },
         "main_server_type":{
             "type":"RAW",
-            "name":"cx32",
+            "name":"cx21",
             "description":"type of remote server"
         },
         "main_server_location":{

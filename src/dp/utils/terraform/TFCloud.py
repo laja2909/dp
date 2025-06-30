@@ -40,7 +40,9 @@ class TFCloud:
             }
         }
         """
-        self.call_api('POST',end_point=end_point,payload=payload)
+        response = self.call_api('POST',end_point=end_point,payload=payload)
+        content = self.get_content_response(response=response)
+        return content
 
     def create_workspace(self,payload:dict):
         end_point=f'https://app.terraform.io/api/v2/organizations/{self.get_organization_name()}/workspaces'

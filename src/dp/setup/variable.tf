@@ -12,27 +12,3 @@ variable "local_ip" {
     sensitive = false
 }
 
-variable "server_location" {
-    description = "location of the server"
-    type = string
-    default = "hel1"
-}
-
-variable "server_image" {
-    description = "image of the server"
-    type = string
-    default = "ubuntu-24.04"
-}
-
-variable "server_type" {
-    description = "type of the server"
-    type = string
-    default = "cx32"
-}
-
-variable "server_name" {
-    description = "name of the server"
-    type = string
-    default = "main_server"
-}
-

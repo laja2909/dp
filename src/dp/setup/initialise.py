@@ -12,7 +12,7 @@ from dp.utils.helper import get_global_confs
 
 
 class ManageProject:
-    def __init__(self, file_path_to_config_file:str=Path(__file__).parent.joinpath('confs.json').as_posix()):
+    def __init__(self, file_path_to_config_file:str=Path(__file__).parent.parent.joinpath('confs.json').as_posix()):
         self._config = get_global_confs(file_path_to_config_file)
     
     def set_config(self,file_path_to_config_file:str):
@@ -26,18 +26,19 @@ class ManageProject:
                                  organization=self.get_config()['terraform_organization'],
                                  workspace=self.get_config()['terraform_workspace'])
 
-        terraform_payloads = Payloads(tf_cloud, self.get_config())
-        payloads_init = terraform_payloads.init_payloads()
+        terraform_payloads = Payloads(tf_cloud)
+        payload_organization = terraform_payloads.init_payload_organization(config_variables=self.get_config())
+        tf_cloud.create_organization(payload=payload_organization['organization'])
 
-        tf_cloud.create_organization(payload=payloads_init['organization'])
-        tf_cloud.create_oauth_client(payload=payloads_init['vcp'])
-        tf_cloud.create_workspace(payload=payloads_init['workspace'])
+        payload_github_client = terraform_payloads.init_payload_github_client(config_variables=self.get_config())
+        tf_cloud.create_oauth_client(payload=payload_github_client['vcp'])
 
-        tf_cloud.create_workspace_variable(payload=payloads_init['local_ip'])
-        tf_cloud.create_workspace_variable(payload=payloads_init['hcloud_token'])
-
+        payload_rest = terraform_payloads.init_payload_rest(config_variables=self.get_config())
+        tf_cloud.create_workspace(payload=payload_rest['workspace'])
+        tf_cloud.create_workspace_variable(payload=payload_rest['local_ip'])
+        tf_cloud.create_workspace_variable(payload=payload_rest['hcloud_token'])
+        
         payload_init_tf_resources = terraform_payloads.init_tf_resource_payload()
-    
         tf_cloud.run_in_runs_end_point(payload=payload_init_tf_resources)
 
     def init_remote_server(self):
@@ -59,10 +60,11 @@ class ManageProject:
         ## generate ssh key in remote
         https_github_repo = f"https://github.com/{self.get_config()['github_user']}/{self.get_config()['github_repository']}.git"
         commands = [
-            f'mkdir {self.get_config()['remote_root_folder_name']}',
-            f'cd ./{self.get_config()['remote_root_folder_name']} && git clone {https_github_repo}',
-            f'cd ./{self.get_config()['remote_root_folder_name']} && ssh-keygen -t rsa -b 4096 -N "" -f ~/.ssh/id_rsa <<<y >/dev/null 2>&1',
-            f'cd ./{self.get_config()['remote_root_folder_name']} && cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys']
+            f"mkdir {self.get_config()['remote_root_folder_name']}",
+            f"cd ./{self.get_config()['remote_root_folder_name']} && git clone {https_github_repo}",
+            f"cd ./{self.get_config()['remote_root_folder_name']} && ssh-keygen -t rsa -b 4096 -N "" -f ~/.ssh/id_rsa <<<y >/dev/null 2>&1",
+            f"cd ./{self.get_config()['remote_root_folder_name']} && cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys"
+            ]
         
         
         # initialise connection
@@ -88,7 +90,7 @@ class ManageProject:
         ssh = RemoteSSH(hostname=ip,
                         port=self.get_config()['hetzner_firewall_ssh_port'], 
                         user=self.get_config()['remote_user'])
-        private_key_content = ssh.get_file_content_via_sftp(target_file_path=f'/{self.get_config()['remote_user']}/.ssh/id_rsa')
+        private_key_content = ssh.get_file_content_via_sftp(target_file_path=f"/{self.get_config()['remote_user']}/.ssh/id_rsa")
         
         git_secrets = {'HETZ_TOKEN':self.get_config()['hetzner_api_token'],
                        'SSH_HOST':ip,
@@ -126,7 +128,9 @@ if __name__=='__main__':
         tf_session = TFCloudCustom()
         tf_session.delete_resources_from_workspace()
     elif args.function == "destroy_terraform_resources_workspace":
-        tf_session = TFCloudCustom()
-        tf_session.delete_terraform_multiple_objects(objects=['resources','workspace'])
+        tf_cloud = TFCloudCustom(token=init_proj.get_config()['terraform_api_token'],
+                                 organization=init_proj.get_config()['terraform_organization'],
+                                 workspace=init_proj.get_config()['terraform_workspace'])
+        tf_cloud.delete_terraform_multiple_objects(objects=['resources','workspace'])
     else:
         print('pass')
