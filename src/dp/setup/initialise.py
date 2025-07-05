@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 import argparse
 
-from dp.setup.Payloads import Payloads
+from dp.setup.Payloads_terraform import Payloads_terraform
 from dp.utils.terraform.TFCloudCustom import TFCloudCustom
 from dp.utils.remote.RemoteSSH import RemoteSSH
 from dp.utils.hetzner.HetznerApi import HetznerApi
@@ -12,7 +12,7 @@ from dp.utils.helper import get_global_confs
 
 
 class ManageProject:
-    def __init__(self, file_path_to_config_file:str=Path(__file__).parent.parent.joinpath('confs.json').as_posix()):
+    def __init__(self, file_path_to_config_file:str=Path(__file__).joinpath('confs.json').as_posix()):
         self._config = get_global_confs(file_path_to_config_file)
     
     def set_config(self,file_path_to_config_file:str):
@@ -25,25 +25,22 @@ class ManageProject:
         tf_cloud = TFCloudCustom(token=self.get_config()['terraform_api_token'],
                                  organization=self.get_config()['terraform_organization'],
                                  workspace=self.get_config()['terraform_workspace'])
-
-        terraform_payloads = Payloads(tf_cloud)
-        payload_organization = terraform_payloads.init_payload_organization(config_variables=self.get_config())
-        tf_cloud.create_organization(payload=payload_organization['organization'])
-
-        payload_github_client = terraform_payloads.init_payload_github_client(config_variables=self.get_config())
-        tf_cloud.create_oauth_client(payload=payload_github_client['vcp'])
-
-        payload_rest = terraform_payloads.init_payload_rest(config_variables=self.get_config())
-        tf_cloud.create_workspace(payload=payload_rest['workspace'])
-        tf_cloud.create_workspace_variable(payload=payload_rest['local_ip'])
-        tf_cloud.create_workspace_variable(payload=payload_rest['hcloud_token'])
         
-        payload_init_tf_resources = terraform_payloads.init_tf_resource_payload()
+        terraform_payloads = Payloads_terraform(tf_cloud, self.get_config())
+        #create terraform organization
+        tf_cloud.create_organization(payload=terraform_payloads.get_payload_organization())
+        # create github client for the version control
+        tf_cloud.create_oauth_client(payload=terraform_payloads.get_payload_vcp())
 
-        #make sure terraform vars are created
-        with open("terraform.tfvars.json","w") as f:
-            json.dump(self.get_config(),f)
-        tf_cloud.run_in_runs_end_point(payload=payload_init_tf_resources)
+        #set terrafrom workspace payload
+        terraform_payloads.set_payload_workspace(workspace_name=tf_cloud.get_workspace_name(),
+                                                 github_user=self.get_config()['github_user'],
+                                                 github_repo=self.get_config()['github_repository'])
+        
+        tf_cloud.create_workspace(payload=terraform_payloads.get_payload_workspace())
+        tf_cloud.create_workspace_variable(payload=terraform_payloads.get_payload_public_ip())
+        tf_cloud.create_workspace_variable(payload=terraform_payloads.get_payload_hcloud_token())
+        
 
     def init_remote_server(self):
         tf_cloud = TFCloudCustom(token=self.get_config()['terraform_api_token'],

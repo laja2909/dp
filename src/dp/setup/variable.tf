@@ -12,12 +12,44 @@ variable "local_ip" {
     sensitive = false
 }
 
-variable "hetzner_main_server_name" {}
-variable "hetzner_main_server_location" {}
-variable "hetzner_main_server_image" {}
-variable "hetzner_main_server_type" {}
+variable "hetzner_main_server_name" {
+    description = ""
+    type = string
+    sensitive = false
+}
+variable "hetzner_main_server_location" {
+    description = ""
+    type = string
+    sensitive = false
+}
+variable "hetzner_main_server_image" {
+    description = ""
+    type = string
+    sensitive = false
+}
+variable "hetzner_main_server_type" {
+    description = ""
+    type = string
+    sensitive = false
+}
 
-variable "hetzner_ssh_key_name" {}
-variable "hetzner_firewall_name" {}
-variable "hetzner_firewall_ssh_port" {}
-variable "hetzner_firewall_airflow_port" {}
+variable "hetzner_ssh_key_name" {
+    description = ""
+    type = string
+    sensitive = false
+}
+variable "hetzner_firewall_name" {
+    description = ""
+    type = string
+    sensitive = false
+}
+variable "hetzner_firewall_ssh_port" {
+    description = ""
+    type = string
+    sensitive = false
+}
+variable "hetzner_firewall_airflow_port" {
+    description = ""
+    type = string
+    sensitive = false
+}
