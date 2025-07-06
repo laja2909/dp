@@ -12,8 +12,8 @@ class PayloadsTerraform:
             "data": {
                 "type": "organizations",
                 "attributes": {
-                    "name": config_variables['terraform_organization'],
-                    "email": config_variables['terraform_email']
+                    "name": config_variables['terraform_organization']['value'],
+                    "email": config_variables['terraform_email']['value']
                 }
             }}
         
@@ -25,33 +25,7 @@ class PayloadsTerraform:
                     "service-provider": "github",
                     "http-url": "https://github.com",
                     "api-url": "https://api.github.com",
-                    "oauth-token-string": config_variables['github_api_token']
-                }
-            }}
-        
-        self._payload_public_ip ={
-            "data": {
-                "type":"vars",
-                "attributes": {
-                    "key":"local_ip",
-                    "value":get_public_ip_address(),
-                    "description":"local ip address needed for firewall configs",
-                    "category":"terraform",
-                    "hcl":False,
-                    "sensitive":False
-                }
-            }}
-        
-        self._payload_hcloud_token = {
-            "data": {
-                "type":"vars",
-                "attributes": {
-                    "key":"hcloud_token",
-                    "value":config_variables['hetzner_api_token'],
-                    "description":"hetzner token to enable resource creation",
-                    "category":"terraform",
-                    "hcl":False,
-                    "sensitive":True
+                    "oauth-token-string": config_variables['github_api_token']['value']
                 }
             }}
     
@@ -64,12 +38,9 @@ class PayloadsTerraform:
     def get_payload_workspace(self):
         return self._payload_workspace
     
-    def get_payload_public_ip(self):
-        return self._payload_public_ip
+    def get_payload_variables(self):
+        return self._payload_variables
     
-    def get_payload_hcloud_token(self):
-        return self._payload_hcloud_token
-     
     def set_payload_workspace(self, workspace_name:str, github_user:str, github_repo:str):
         # to create workspace
         github_client_id = self.terraform_cloud_instance.get_oauth_client_id_by_service_provider('github')
@@ -92,3 +63,40 @@ class PayloadsTerraform:
             "type": "workspaces"
             }
         }
+
+    def set_payload_variables(self,variables:dict):
+        final_variable_dict = {}
+
+        #local ip variable
+        final_variable_dict.update(
+        {"local_ip":
+            {"data": {
+                "type":"vars",
+                "attributes": {
+                    "key":"local_ip",
+                    "value":get_public_ip_address(),
+                    "description":"local ip address needed for firewall configs",
+                    "category":"terraform",
+                    "hcl":False,
+                    "sensitive":False
+                }
+            }}
+        })
+        
+        for key,value in variables.items():
+            if value.get("terraform_configurations"):
+                final_variable_dict.update(
+                    {key:
+                     {"data": {
+                         "type":"vars",
+                         "attributes": {
+                             "key":key,
+                             "value":value['value'],
+                             "description":"",
+                             "category":"terraform",
+                             "hcl":False,
+                             "sensitive":value['terraform_configurations']['is_sensitive']=="True"
+                            }
+                        }
+                    }})
+        self._payload_variables = final_variable_dict

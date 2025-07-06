@@ -1,6 +1,6 @@
 
 #hetzner
-variable "hcloud_token" {
+variable "hetzner_api_token" {
     description = "api token"
     type = string
     sensitive = true

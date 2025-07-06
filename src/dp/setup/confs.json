@@ -52,47 +52,56 @@
         "api_token":{
             "type":"LOCAL_ENV",
             "name":"HETZ_TOKEN",
-            "description":"local environment variable to store hetzner api key"
+            "description":"local environment variable to store hetzner api key",
+            "terraform_configurations": {"is_terraform_variable": "True","is_sensitive":"True"}
         },
         "main_server_name":{
             "type":"RAW",
             "name":"dp",
-            "description":"name of remote server"
+            "description":"name of remote server",
+            "terraform_configurations": {"is_terraform_variable": "True","is_sensitive":"False"}
         },
         "main_server_type":{
             "type":"RAW",
             "name":"cx32",
-            "description":"type of remote server"
+            "description":"type of remote server",
+            "terraform_configurations": {"is_terraform_variable": "True","is_sensitive":"False"}
         },
         "main_server_location":{
             "type":"RAW",
             "name":"hel1",
-            "description":"location of remote server"
+            "description":"location of remote server",
+            "terraform_configurations": {"is_terraform_variable": "True","is_sensitive":"False"}
         },
         "main_server_image":{
             "type":"RAW",
             "name":"ubuntu-24.04",
-            "description":"image of remote server"
+            "description":"image of remote server",
+            "terraform_configurations": {"is_terraform_variable": "True","is_sensitive":"False"}
         },
         "ssh_key_name":{
             "type":"RAW",
             "name":"primary-ssh-key",
-            "description":"key to access remote server"
+            "description":"key to access remote server",
+            "terraform_configurations": {"is_terraform_variable": "True","is_sensitive":"False"}
         },
         "firewall_name":{
             "type":"RAW",
             "name":"dp-firewall",
-            "description":"name for firewall policy"
+            "description":"name for firewall policy",
+            "terraform_configurations": {"is_terraform_variable": "True","is_sensitive":"False"}
         },
         "firewall_ssh_port":{
             "type":"RAW",
             "name":"22",
-            "description":"name for firewall policy"
+            "description":"name for firewall policy",
+            "terraform_configurations": {"is_terraform_variable": "True","is_sensitive":"False"}
         },
         "firewall_airflow_port":{
             "type":"RAW",
             "name":"8080",
-            "description":"name for firewall policy"
+            "description":"name for firewall policy",
+            "terraform_configurations": {"is_terraform_variable": "True","is_sensitive":"False"}
         }
 
     },
