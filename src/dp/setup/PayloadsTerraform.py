@@ -4,7 +4,7 @@ from dp.utils.terraform.TFCloudCustom import TFCloudCustom
 from dp.utils.helper import get_public_ip_address
 
 
-class Payloads_terraform:
+class PayloadsTerraform:
     def __init__(self, tf_instance:TFCloudCustom, config_variables:json):
         self.terraform_cloud_instance = tf_instance
         

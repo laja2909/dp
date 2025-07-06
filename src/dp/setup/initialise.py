@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 import argparse
 
-from dp.setup.Payloads_terraform import Payloads_terraform
+from dp.setup.PayloadsTerraform import PayloadsTerraform
 from dp.utils.terraform.TFCloudCustom import TFCloudCustom
 from dp.utils.remote.RemoteSSH import RemoteSSH
 from dp.utils.hetzner.HetznerApi import HetznerApi
@@ -12,7 +12,7 @@ from dp.utils.helper import get_global_confs
 
 
 class ManageProject:
-    def __init__(self, file_path_to_config_file:str=Path(__file__).joinpath('confs.json').as_posix()):
+    def __init__(self, file_path_to_config_file:str=Path(__file__).parent.joinpath('confs.json').as_posix()):
         self._config = get_global_confs(file_path_to_config_file)
     
     def set_config(self,file_path_to_config_file:str):
@@ -26,7 +26,7 @@ class ManageProject:
                                  organization=self.get_config()['terraform_organization'],
                                  workspace=self.get_config()['terraform_workspace'])
         
-        terraform_payloads = Payloads_terraform(tf_cloud, self.get_config())
+        terraform_payloads = PayloadsTerraform(tf_cloud, self.get_config())
         #create terraform organization
         tf_cloud.create_organization(payload=terraform_payloads.get_payload_organization())
         # create github client for the version control
