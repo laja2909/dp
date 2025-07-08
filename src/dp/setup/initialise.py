@@ -163,6 +163,6 @@ if __name__=='__main__':
         tf_cloud = TFCloudCustom(token=init_proj.get_config()['terraform_api_token']['value'],
                                  organization=init_proj.get_config()['terraform_organization']['value'],
                                  workspace=init_proj.get_config()['terraform_workspace']['value'])
-        tf_cloud.delete_terraform_multiple_objects(objects=['resources','workspace'])
+        tf_cloud.delete_terraform_multiple_objects(objects=['resources','workspace','organization'])
     else:
         print('pass')
