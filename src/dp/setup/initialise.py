@@ -121,6 +121,7 @@ if __name__=='__main__':
     parser.add_argument("function", choices=["init_terraform_resources",
                                              "init_remote_server",
                                              "init_github",
+                                             "trigger_terraform_run",
                                              "destroy_resources",
                                              "destroy_terraform_resources_workspace"])
 
@@ -132,6 +133,25 @@ if __name__=='__main__':
         init_proj.init_remote_server()
     elif args.function == "init_github":
         init_proj.init_github()
+    elif args.function == "trigger_terraform_run":
+         
+        tf_session = TFCloudCustom()
+        payload_trigger_run = {
+             "data": {
+                "attributes": {
+                     "message": 'run triggered'
+                     },
+                "type":"runs",
+                "relationships": {
+                    "workspace": {
+                        "data": {
+                            "type": "workspaces",
+                            "id": tf_session.get_workspace_id()
+                        }
+                    }
+                }
+            }}
+        tf_session.run_in_runs_end_point(payload=payload_trigger_run)
     elif args.function == "destroy_resources":
         tf_session = TFCloudCustom()
         tf_session.delete_resources_from_workspace()
