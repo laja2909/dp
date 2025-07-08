@@ -10,7 +10,7 @@ terraform {
 }
 
 provider "hcloud" {
-  token = var.hcloud_token
+  token = var.hetzner_api_token
 }
 
 resource "tls_private_key" "generic-ssh-key" {
