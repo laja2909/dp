@@ -57,7 +57,7 @@ class PayloadsTerraform:
                 "vcs-repo": {
                     "identifier":f"{github_user}/{github_repo}",
                     "oauth-token-id": github_oauth_token_id,
-                    "branch": ""
+                    "branch": "main"
                 }
             },
             "type": "workspaces"
