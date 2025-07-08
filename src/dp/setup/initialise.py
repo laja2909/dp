@@ -135,7 +135,9 @@ if __name__=='__main__':
         init_proj.init_github()
     elif args.function == "trigger_terraform_run":
          
-        tf_session = TFCloudCustom()
+        tf_session = TFCloudCustom(token=init_proj.get_config()['terraform_api_token']['value'],
+                                 organization=init_proj.get_config()['terraform_organization']['value'],
+                                 workspace=init_proj.get_config()['terraform_workspace']['value'])
         payload_trigger_run = {
              "data": {
                 "attributes": {
@@ -153,7 +155,9 @@ if __name__=='__main__':
             }}
         tf_session.run_in_runs_end_point(payload=payload_trigger_run)
     elif args.function == "destroy_resources":
-        tf_session = TFCloudCustom()
+        tf_session = TFCloudCustom(token=init_proj.get_config()['terraform_api_token']['value'],
+                                 organization=init_proj.get_config()['terraform_organization']['value'],
+                                 workspace=init_proj.get_config()['terraform_workspace']['value'])
         tf_session.delete_resources_from_workspace()
     elif args.function == "destroy_terraform_resources_workspace":
         tf_cloud = TFCloudCustom(token=init_proj.get_config()['terraform_api_token']['value'],
