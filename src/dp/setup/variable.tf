@@ -53,3 +53,9 @@ variable "hetzner_firewall_airflow_port" {
     type = string
     sensitive = false
 }
+
+variable "test_var" {
+    description = ""
+    type = string
+    sensitive = false
+}
