@@ -122,11 +122,14 @@ class TFCloud:
         end_point = f'https://app.terraform.io/api/v2/organizations/{self.get_organization_name()}/workspaces'
         response = self.call_api('GET',end_point=end_point)
         content = self.get_content_response(response)
-        for ind, value in enumerate(content['data']):
-            if value['attributes']['name']==self.get_workspace_name():
-                workspace_id = value['id']
-            else:
-                workspace_id=''
+        if len(content['data'])>0:
+            for ind, value in enumerate(content['data']):
+                if value['attributes']['name']==self.get_workspace_name():
+                    workspace_id = value['id']
+                else:
+                    workspace_id=''
+        else:
+            workspace_id=''
         return workspace_id
     
     def get_vars_end_point_content(self):
@@ -307,7 +310,11 @@ class TFCloud:
     def has_workspace_resources_running(self) -> bool:
         workspace_id = self.get_workspace_id()
         resources = self.get_resources_from_workspace(workspace_id)
-        return len(resources['data'])>0
+        if resources.get('data')!=None:
+            test_data = len(resources['data'])>0
+        else:
+            test_data = False
+        return test_data
 
     
 if __name__=='__main__':
