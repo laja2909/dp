@@ -18,13 +18,13 @@ class ManageProject:
     def set_config(self,file_path_to_config_file:str):
         self._config = get_global_confs(file_path=file_path_to_config_file)
 
-    def get_config(self) -> json:
-        return self._config
+    def get_config(self, variable_name:str) -> json:
+        return self._config[variable_name]['value']
     
     def init_terraform_resources(self):
-        tf_cloud = TFCloudCustom(token=self.get_config()['terraform_api_token']['value'],
-                                 organization=self.get_config()['terraform_organization']['value'],
-                                 workspace=self.get_config()['terraform_workspace']['value'])
+        tf_cloud = TFCloudCustom(token=self.get_config('terraform_api_token'),
+                                 organization=self.get_config('terraform_organization'),
+                                 workspace=self.get_config('terraform_workspace'))
         
         terraform_payloads = PayloadsTerraform(tf_cloud, self.get_config())
         #create terraform organization
@@ -34,8 +34,8 @@ class ManageProject:
 
         #set terrafrom workspace payload
         terraform_payloads.set_payload_workspace(workspace_name=tf_cloud.get_workspace_name(),
-                                                 github_user=self.get_config()['github_user']['value'],
-                                                 github_repo=self.get_config()['github_repository']['value'])
+                                                 github_user=self.get_config('github_user'),
+                                                 github_repo=self.get_config('github_repository'))
         
         tf_cloud.create_workspace(payload=terraform_payloads.get_payload_workspace())
         
@@ -50,39 +50,42 @@ class ManageProject:
         
 
     def init_remote_server(self):
-        tf_cloud = TFCloudCustom(token=self.get_config()['terraform_api_token']['value'],
-                            organization=self.get_config()['terraform_organization']['value'],
-                            workspace=self.get_config()['terraform_workspace']['value'])
+        tf_cloud = TFCloudCustom(token=self.get_config('terraform_api_token'),
+                            organization=self.get_config('terraform_organization'),
+                            workspace=self.get_config('terraform_workspace'))
 
         # copy ssh keys from remote to local
-        tf_cloud.copy_tls_ssh_keys_from_remote_to_local(to_key_name=self.get_config()['local_ssh_key_name']['value'],
-                                                        to_ssh_path_name=self.get_config()['local_ssh_path']['value'])
+        #tf_cloud.copy_tls_ssh_keys_from_remote_to_local(to_key_name=self.get_config('local_ssh_key_name'),
+        #                                               to_ssh_path_name=self.get_config('local_ssh_path'))
         
         #variables for connecting to server
-        hetz_api = HetznerApi()
-        ip = hetz_api.get_server_ipv4_by_name(server_name=self.get_config()['hetzner_main_server_name']['value'])
+        hetz_api = HetznerApi(api_token=self.get_config('hetzner_api_token'))
+        ip = hetz_api.get_server_ipv4_by_name(server_name=self.get_config('hetzner_main_server_name'))
 
+        
         # commands to run in remote
         ## create project folder
         ## clone repo
         ## generate ssh key in remote
-        https_github_repo = f"https://github.com/{self.get_config()['github_user']['value']}/{self.get_config()['github_repository']['value']}.git"
+        https_github_repo = f"https://github.com/{self.get_config('github_user')}/{self.get_config('github_repository')}.git"
         commands = [
-            f"mkdir {self.get_config()['remote_root_folder_name']['value']}",
-            f"cd ./{self.get_config()['remote_root_folder_name']['value']} && git clone {https_github_repo}",
-            f"cd ./{self.get_config()['remote_root_folder_name']['value']} && ssh-keygen -t rsa -b 4096 -N "" -f ~/.ssh/id_rsa <<<y >/dev/null 2>&1",
-            f"cd ./{self.get_config()['remote_root_folder_name']['value']} && cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys"
+            f"mkdir {self.get_config('remote_root_folder_name')}",
+            f"cd ./{self.get_config('remote_root_folder_name')} && git clone {https_github_repo}",
+            f"cd ./{self.get_config('remote_root_folder_name')} && ssh-keygen -t rsa -b 4096 -N \"\" -f ~/.ssh/id_rsa <<<y >/dev/null 2>&1",
+            f"cd ./{self.get_config('remote_root_folder_name')} && cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys"
             ]
         
         
         # initialise connection
         ssh = RemoteSSH(hostname=ip,
-                        port=self.get_config()['hetzner_firewall_ssh_port']['value'],
-                        user=self.get_config()['remote_user']['value'])
+                        port=self.get_config('hetzner_firewall_ssh_port'),
+                        user=self.get_config('remote_user'))
     
         #run commands
         for cmd in commands:
-            ssh.execute_via_private_key(command=cmd)
+            ssh.execute_via_private_key(command=cmd, private_key_path=self.get_config('local_ssh_path'),
+                                        key_name=self.get_config('local_ssh_key_name'))
+        
         
     def init_github(self):
         git = GithubApi()

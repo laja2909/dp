@@ -1,11 +1,8 @@
 import requests
 import json
 
-from dp.utils.confs import confs
-from dp.utils.helper import get_env_variable
-
 class HetznerApi:
-    def __init__(self, api_token:str=get_env_variable(confs['hetzner']['api_token']['name'])):
+    def __init__(self, api_token:str):
         self._header = {'Authorization': 'Bearer '+ api_token}
 
     def get_header(self):

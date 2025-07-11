@@ -1,8 +1,6 @@
 from pathlib import Path
 import paramiko
 
-from dp.utils.confs import confs
-from dp.utils.helper import get_env_variable
 from dp.utils.hetzner.HetznerApi import HetznerApi
 
 class RemoteSSH:
@@ -20,13 +18,13 @@ class RemoteSSH:
     def get_user(self):
         return self._user
 
-    def execute_via_private_key(self,command:str,private_key_path:str=confs['local']['ssh_path']['name'], 
-                                key_name:str=confs['local']['ssh_key_name']['name']):
+    def execute_via_private_key(self,command:str,private_key_path:str, 
+                                key_name:str):
         #create ssh client
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         
-        private_key_full_path = Path(get_env_variable(private_key_path)).joinpath(key_name)
+        private_key_full_path = Path(private_key_path).joinpath(key_name)
         private_key = paramiko.RSAKey.from_private_key_file(private_key_full_path)
         try:
             #connect
@@ -47,12 +45,12 @@ class RemoteSSH:
             ssh.close()
     
     def get_file_content_via_sftp(self,target_file_path:str,
-                                  private_key_path:str=confs['local']['ssh_path']['name'], 
-                                  key_name:str=confs['local']['ssh_key_name']['name']):
+                                  private_key_path:str, 
+                                  key_name:str):
         #create ssh client
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        private_key_full_path = Path(get_env_variable(private_key_path)).joinpath(key_name)
+        private_key_full_path = Path(private_key_path).joinpath(key_name)
         private_key = paramiko.RSAKey.from_private_key_file(private_key_full_path)
 
         try:
