@@ -72,7 +72,3 @@ if __name__=='__main__':
 
     ssh = RemoteSSH(hostname=ip, port=22, user='root')
     command = 'ls -la'
-
-    private_key_path = Path(get_env_variable(confs['local']['ssh_path']['name'])) / 'id_hetzner'
-    ssh.execute_via_private_key(private_key_path=private_key_path, command=command)
-
