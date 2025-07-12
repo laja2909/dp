@@ -59,7 +59,7 @@ jobs:
         ssh-keyscan -H ${{ secrets.REMOTE_SSH_HOST_IP }} > ~/.ssh/known_hosts
         
     - name: update repository in hetzner server
-      run: ssh ${{ secrets.REMOTE_SSH_USER }}@${{ secrets.REMOTE_SSH_HOST_IP }} "cd ${{ vars.REMOTE_ROOT_FOLDER_NAME }} && git checkout ${{ vars.GIT_MAIN_BRANCH_NAME }} && git pull && exit"
+      run: ssh ${{ secrets.REMOTE_SSH_USER }}@${{ secrets.REMOTE_SSH_HOST_IP }} "cd ${{ vars.REMOTE_ROOT_FOLDER_NAME }}/${{ vars.GIT_REPOSITORY }} && git checkout ${{ vars.GIT_MAIN_BRANCH_NAME }} && git pull && exit"
 
     - name: get firewall resource hetzner id
       id: get_firewall_id
