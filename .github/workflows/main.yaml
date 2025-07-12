@@ -1,3 +1,5 @@
+name: Sync to remote server
+
 on:
   push:
     branches:
@@ -7,9 +9,14 @@ on:
 jobs:
   run_pull:
     name: run pull
+    if: "!contains(github.event.head_commit.message, '[skip syncing to remote]')"
     runs-on: ubuntu-latest
     
     steps:
+    - name: Show latest commit message
+      run: |
+        echo "Latest commit message: ${{ github.event.head_commit.message }}"
+        
     - name: get runner ip
       run: |
         RUNNER_IP=$(curl -s https://api.ipify.org)
@@ -24,8 +31,8 @@ jobs:
     - name: get hetzner server id
       run: |
         SERVER_ID=$(curl \
-        -H "Authorization: Bearer ${{ secrets.HETZ_TOKEN }}" \
-        'https://api.hetzner.cloud/v1/servers?name=${{ vars.HETZ_MAIN_SERVER_NAME }}' | jq '.servers[0].id')
+        -H "Authorization: Bearer ${{ secrets.HETZNER_TOKEN }}" \
+        'https://api.hetzner.cloud/v1/servers?name=${{ vars.HETZNER_MAIN_SERVER_NAME }}' | jq '.servers[0].id')
         echo "SERVER_ID=$SERVER_ID" >> $GITHUB_ENV
         
     - name: set firewall name
@@ -38,7 +45,7 @@ jobs:
       run: |
         curl \
           -X POST \
-          -H "Authorization: Bearer ${{ secrets.HETZ_TOKEN }}" \
+          -H "Authorization: Bearer ${{ secrets.HETZNER_TOKEN }}" \
           -H "Content-Type: application/json" \
           -d '{"name":"'$FIREWALL_NAME'","labels":{"key":"value"},"rules":[{"description":"Allow ssh","direction":"in","source_ips":["'$CIDR'"],"protocol":"tcp","port":"22"}],"apply_to":[{"type":"server","server":{"id":'$SERVER_ID'}}]}' \
           'https://api.hetzner.cloud/v1/firewalls'
@@ -48,18 +55,18 @@ jobs:
       # https://stackoverflow.com/a/70447517
       run: |
         install -m 600 -D /dev/null ~/.ssh/id_rsa
-        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-        ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
+        echo "${{ secrets.REMOTE_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        ssh-keyscan -H ${{ secrets.REMOTE_SSH_HOST_IP }} > ~/.ssh/known_hosts
         
     - name: update repository in hetzner server
-      run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ vars.WORK_DIR_IN_REMOTE }} && git checkout ${{ vars.MAIN_BRANCH }} && git pull && exit"
+      run: ssh ${{ secrets.REMOTE_SSH_USER }}@${{ secrets.REMOTE_SSH_HOST_IP }} "cd ${{ vars.REMOTE_ROOT_FOLDER_NAME }} && git checkout ${{ vars.GIT_MAIN_BRANCH_NAME }} && git pull && exit"
 
     - name: get firewall resource hetzner id
       id: get_firewall_id
       if: steps.create_firewall.outcome == 'success'
       run: |
         FIREWALL_ID=$(curl \
-        -H "Authorization: Bearer ${{ secrets.HETZ_TOKEN }}" \
+        -H "Authorization: Bearer ${{ secrets.HETZNER_TOKEN }}" \
         'https://api.hetzner.cloud/v1/firewalls?name='$FIREWALL_NAME'' | jq '.firewalls[0].id')
         echo "FIREWALL_ID=$FIREWALL_ID" >> $GITHUB_ENV
 
@@ -69,7 +76,7 @@ jobs:
       run: |
         curl \
           -X POST \
-          -H "Authorization: Bearer ${{ secrets.HETZ_TOKEN }}" \
+          -H "Authorization: Bearer ${{ secrets.HETZNER_TOKEN }}" \
           -H "Content-Type: application/json" \
           -d '{"remove_from":[{"type":"server","server":{"id":'$SERVER_ID'}}]}' \
           'https://api.hetzner.cloud/v1/firewalls/'$FIREWALL_ID'/actions/remove_from_resources'
@@ -79,7 +86,7 @@ jobs:
       run: |
         curl \
           -X DELETE \
-          -H "Authorization: Bearer ${{ secrets.HETZ_TOKEN }}" \
+          -H "Authorization: Bearer ${{ secrets.HETZNER_TOKEN }}" \
           'https://api.hetzner.cloud/v1/firewalls/'$FIREWALL_ID''
     
     - name: cleanup

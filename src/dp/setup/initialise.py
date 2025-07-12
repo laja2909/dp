@@ -94,6 +94,10 @@ class ManageProject:
                     'GIT_MAIN_BRANCH_NAME':'main',
                     'REMOTE_ROOT_FOLDER_NAME':self.get_config('remote_root_folder_name')}
 
+        for key, value in git_vars.items():
+            git.create_repo_variable(var_name=key,var_value=value, owner=self.get_config('github_user'),
+                                     repo=self.get_config('github_repository'))
+        
         #create github secrets
         hetz_api = HetznerApi(api_token=self.get_config('hetzner_api_token'))
         ip = hetz_api.get_server_ipv4_by_name(server_name=self.get_config('hetzner_main_server_name'))
@@ -101,7 +105,9 @@ class ManageProject:
         ssh = RemoteSSH(hostname=ip,
                         port=self.get_config('hetzner_firewall_ssh_port'), 
                         user=self.get_config('remote_user'))
-        private_key_content = ssh.get_file_content_via_sftp(target_file_path=f"/{self.get_config('remote_user')}/.ssh/id_rsa")
+        private_key_content = ssh.get_file_content_via_sftp(target_file_path=f"/{self.get_config('remote_user')}/.ssh/id_rsa",
+                                                            private_key_path=self.get_config('local_ssh_path'),
+                                                            key_name=self.get_config('local_ssh_key_name'))
         
         git_secrets = {'HETZNER_TOKEN':self.get_config('hetzner_api_token'),
                        'REMOTE_SSH_HOST_IP':ip,
@@ -109,7 +115,8 @@ class ManageProject:
                        'REMOTE_SSH_USER':self.get_config('remote_user')}
         
         for key,value in git_secrets.items():
-            git.create_repo_secret(secret_name=key, secret_value=value)
+            git.create_repo_secret(secret_name=key, secret_value=value,owner=self.get_config('github_user'),
+                                     repo=self.get_config('github_repository'))
         
         print('done!')
 
