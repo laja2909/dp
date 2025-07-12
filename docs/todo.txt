@@ -1,6 +1,13 @@
-# There should be only one config file, but now there is many... terraform variable file and confs.json need to do something about it.
+# delete legacy git variables, make sure that init_gihtub works, fix main.yml
+# should the initialise.py be "ManageProject.py" since it's a class and should it be in the setup folder??
+
 
 # main.yml should run only when some pull request tag is added to the pull request. How to?
+
+
+# There should be only one config file, but now there is many... terraform variable file and confs.json need to do something about it.
+
+
 
 
 

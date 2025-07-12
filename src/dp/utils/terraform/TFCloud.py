@@ -311,10 +311,10 @@ class TFCloud:
         workspace_id = self.get_workspace_id()
         resources = self.get_resources_from_workspace(workspace_id)
         if resources.get('data')!=None:
-            test_data = len(resources['data'])>0
+            has_resources = len(resources['data'])>0
         else:
-            test_data = False
-        return test_data
+            has_resources = False
+        return has_resources
 
     
 if __name__=='__main__':

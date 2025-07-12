@@ -2,7 +2,7 @@ import argparse
 from pathlib import Path
 
 from dp.utils.terraform.TFCloud import TFCloud
-from dp.utils.helper import get_public_ip_address, write_files_to_local, get_env_variable
+from dp.utils.helper import get_public_ip_address, write_files_to_local
 
 class TFCloudCustom(TFCloud):
     """
