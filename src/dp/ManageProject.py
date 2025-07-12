@@ -12,7 +12,7 @@ from dp.utils.helper import get_global_confs
 
 
 class ManageProject:
-    def __init__(self, file_path_to_config_file:str=Path(__file__).parent.joinpath('/setup/confs.json').as_posix()):
+    def __init__(self, file_path_to_config_file:str=Path(__file__).parent.joinpath('setup/confs.json').as_posix()):
         self._config = get_global_confs(file_path_to_config_file)
     
     def set_config(self,file_path_to_config_file:str):
