@@ -88,25 +88,25 @@ class ManageProject:
         
         
     def init_github(self):
-        git = GithubApi()
+        git = GithubApi(token=self.get_config('github_api_token'))
         
-        git_vars = {'HETZ_MAIN_SERVER_NAME':self.get_config()['hetzner_main_server_name']['value'],
-                    'MAIN_BRANCH':'main',
-                    'WORK_DIR_IN_REMOTE':'projects'}
+        git_vars = {'HETZNER_MAIN_SERVER_NAME':self.get_config('hetzner_main_server_name'),
+                    'GIT_MAIN_BRANCH_NAME':'main',
+                    'REMOTE_ROOT_FOLDER_NAME':self.get_config('remote_root_folder_name')}
 
         #create github secrets
-        hetz_api = HetznerApi()
-        ip = hetz_api.get_server_ipv4_by_name(server_name=self.get_config()['hetzner_main_server_name']['value'])
+        hetz_api = HetznerApi(api_token=self.get_config('hetzner_api_token'))
+        ip = hetz_api.get_server_ipv4_by_name(server_name=self.get_config('hetzner_main_server_name'))
 
         ssh = RemoteSSH(hostname=ip,
-                        port=self.get_config()['hetzner_firewall_ssh_port']['value'], 
-                        user=self.get_config()['remote_user']['value'])
-        private_key_content = ssh.get_file_content_via_sftp(target_file_path=f"/{self.get_config()['remote_user']['value']}/.ssh/id_rsa")
+                        port=self.get_config('hetzner_firewall_ssh_port'), 
+                        user=self.get_config('remote_user'))
+        private_key_content = ssh.get_file_content_via_sftp(target_file_path=f"/{self.get_config('remote_user')}/.ssh/id_rsa")
         
-        git_secrets = {'HETZ_TOKEN':self.get_config()['hetzner_api_token']['value'],
-                       'SSH_HOST':ip,
-                       'SSH_PRIVATE_KEY':private_key_content,
-                       'SSH_USER':self.get_config()['remote_user']['value']}
+        git_secrets = {'HETZNER_TOKEN':self.get_config('hetzner_api_token'),
+                       'REMOTE_SSH_HOST_IP':ip,
+                       'REMOTE_SSH_PRIVATE_KEY':private_key_content,
+                       'REMOTE_SSH_USER':self.get_config('remote_user')}
         
         for key,value in git_secrets.items():
             git.create_repo_secret(secret_name=key, secret_value=value)

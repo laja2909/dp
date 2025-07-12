@@ -4,27 +4,19 @@ import json
 from base64 import b64encode
 from nacl import encoding, public
 
-from dp.utils.confs import confs
-from dp.utils.helper import get_env_variable
-
-
-
 class GithubApi:
     """
     Class to help with Github API calls
     
     """
-    def __init__(self,token_name:str=confs['github']['api_token']['name']):
-        token = get_env_variable(token_name)
+    def __init__(self,token:str):
         self._header = {'Authorization': f'token {token}',
                         'Accept': 'application/vnd.github+json'}
     
     def get_header(self):
         return self._header
     
-    def create_repo_variable(self,var_name:str, var_value:str,
-                             owner:str=get_env_variable(confs['github']['user']['name']),
-                             repo:str=get_env_variable(confs['github']['repository']['name'])) -> None:
+    def create_repo_variable(self,var_name:str, var_value:str,owner:str,repo:str) -> json:
         end_point = f'https://api.github.com/repos/{owner}/{repo}/actions/variables'
 
         payload = {'name':var_name, 'value':var_value}
@@ -40,9 +32,7 @@ class GithubApi:
         return b64encode(encrypted).decode("utf-8")
 
 
-    def create_repo_secret(self,secret_name:str, secret_value:str,
-                             owner:str=get_env_variable(confs['github']['user']['name']),
-                             repo:str=get_env_variable(confs['github']['repository']['name'])) -> None:
+    def create_repo_secret(self,secret_name:str, secret_value:str,owner:str,repo:str) -> json:
         
         #get public key
         end_point_public_key = f'https://api.github.com/repos/{owner}/{repo}/actions/secrets/public-key'
@@ -65,16 +55,14 @@ class GithubApi:
         return content
 
 
-    def get_repo_secrets(self,owner:str=get_env_variable(confs['github']['user']['name']),
-                         repo:str=get_env_variable(confs['github']['repository']['name'])) -> json:
+    def get_repo_secrets(self,owner:str,repo:str) -> json:
 
         end_point = f'https://api.github.com/repos/{owner}/{repo}/actions/secrets'
         response = self.call_api('GET',end_point=end_point)
         content = self.get_content_response(response)
         return content
     
-    def get_repo_variables(self,owner:str=get_env_variable(confs['github']['user']['name']),
-                         repo:str=get_env_variable(confs['github']['repository']['name'])):
+    def get_repo_variables(self,owner:str,repo:str) -> json:
 
         end_point = f'https://api.github.com/repos/{owner}/{repo}/actions/variables'
         response = self.call_api('GET',end_point=end_point)
