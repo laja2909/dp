@@ -55,7 +55,7 @@ variable "hetzner_firewall_airflow_port" {
 }
 
 #aws
-variable "aws_region" {
+variable "aws_s3_region" {
     description = ""
     type = string
     sensitive = false
