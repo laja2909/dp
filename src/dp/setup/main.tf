@@ -20,7 +20,7 @@ provider "hcloud" {
 provider "aws" {
   region = var.aws_s3_region
   access_key = var.aws_access_key
-  secret_key = var.aws_secret_key
+  secret_key = var.aws_secret_access_key
 }
 
 resource "tls_private_key" "generic-ssh-key" {
