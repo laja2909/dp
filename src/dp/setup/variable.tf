@@ -54,3 +54,28 @@ variable "hetzner_firewall_airflow_port" {
     sensitive = false
 }
 
+#aws
+variable "aws_region" {
+    description = ""
+    type = string
+    sensitive = false
+}
+
+variable "aws_access_key" {
+    description = ""
+    type = string
+    sensitive = true
+}
+
+variable "aws_secret_access_key" {
+    description = ""
+    type = string
+    sensitive = true
+}
+
+variable "aws_s3_bucket_name" {
+    description = ""
+    type = string
+    sensitive = false
+}
+

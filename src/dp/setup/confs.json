@@ -105,6 +105,32 @@
         }
 
     },
+    "aws": {
+        "access_key":{
+            "type":"LOCAL_ENV",
+            "name":"AWS_ACCESS_KEY_ID_DATA",
+            "description":"aws access key for s3 user",
+            "terraform_configurations": {"is_terraform_variable": "True","is_sensitive":"True"}
+        },
+        "secret_access_key":{
+            "type":"LOCAL_ENV",
+            "name":"AWS_SECRET_ACCESS_KEY_DATA",
+            "description":"aws secret access key for s3 user",
+            "terraform_configurations": {"is_terraform_variable": "True","is_sensitive":"True"}
+        },
+        "s3_region":{
+            "type":"RAW",
+            "name":"eu-north-1",
+            "description":"region for s3 bucket",
+            "terraform_configurations": {"is_terraform_variable": "True","is_sensitive":"False"}
+        },
+        "s3_bucket_name":{
+            "type":"RAW",
+            "name":"dp-data-platform",
+            "description":"s3 bucket name",
+            "terraform_configurations": {"is_terraform_variable": "True","is_sensitive":"False"}
+        }
+    },
     "local": {
         "ssh_path":{
             "type":"LOCAL_ENV",
