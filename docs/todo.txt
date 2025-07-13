@@ -1,8 +1,8 @@
-# delete legacy git variables, make sure that init_gihtub works, fix main.yml
-# should the initialise.py be "ManageProject.py" since it's a class and should it be in the setup folder??
+# Add s3 resource
+# Add pytest logic
+# maybe add api class since many apiclasses now uses similar logic.
 
-
-# main.yml should run only when some pull request tag is added to the pull request. How to?
+# To the initialisation, we need to add logic of creating venv in there? And everytime syncing job, need to add pip install --requirements.txt there?
 
 
 # There should be only one config file, but now there is many... terraform variable file and confs.json need to do something about it.
@@ -30,6 +30,13 @@ ALSO THINK ABOUT CREATING GLOBAL CONFS FILE FOR ALL NECESSARY VARIABLES!
 
 
 #DONE:
+# delete legacy git variables, make sure that init_gihtub works, fix main.yml
+ -- done
+# should the initialise.py be "ManageProject.py" since it's a class and should it be in the setup folder??
+ --done, and moved to parent folder
+# main.yml should run only when some pull request tag is added to the pull request. How to?
+ --done based on latest commit message. If branch latest commit message is NOT "skip syncing to remote", trigger workflow.
+ --so if you dont want to trigger the workflow, specify the string as last commit message.
 github api and secret and variable create to initialise.py
 also modify workflow file once variables are added to github.
 -initiliase.py add init resource stuff now that we have remotessh and hetznerapi done.

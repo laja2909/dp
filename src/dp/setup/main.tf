@@ -6,11 +6,21 @@ terraform {
       source = "hetznercloud/hcloud"
       version = "~> 1.45"
     }
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 6.2"
+    }
   }
 }
 
 provider "hcloud" {
   token = var.hetzner_api_token
+}
+
+provider "aws" {
+  region = var.aws_region
+  access_key = var.aws_access_key
+  secret_key = var.aws_secret_key
 }
 
 resource "tls_private_key" "generic-ssh-key" {
@@ -57,4 +67,9 @@ resource "hcloud_server" "main_server" {
     ipv4_enabled = true
     ipv6_enabled = true
   }
+}
+
+resource "aws_s3_bucket" "main_bucket" {
+  bucket = var.aws_s3_bucket_name
+  acl    = "private"
 }

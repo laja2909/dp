@@ -12,7 +12,7 @@ from dp.utils.helper import get_global_confs
 
 
 class ManageProject:
-    def __init__(self, file_path_to_config_file:str=Path(__file__).parent.joinpath('confs.json').as_posix()):
+    def __init__(self, file_path_to_config_file:str=Path(__file__).parent.joinpath('setup/confs.json').as_posix()):
         self._config = get_global_confs(file_path_to_config_file)
     
     def set_config(self,file_path_to_config_file:str):
@@ -124,7 +124,7 @@ class ManageProject:
         
         print('done!')
 
-    def update_local_ip_terraform_variable(self):
+    def update_terraform_variables(self, list_of_variable_names=None):
         tf_cloud = TFCloudCustom(token=self.get_config_variable('terraform_api_token'),
                                  organization=self.get_config_variable('terraform_organization'),
                                  workspace=self.get_config_variable('terraform_workspace'))
@@ -133,13 +133,21 @@ class ManageProject:
         #set terraform variables
         terraform_payloads.set_payload_variables(variables=self.get_config())
         
-        if terraform_payloads.get_payload_variables():
-            for key,value in terraform_payloads.get_payload_variables().items():
-                if key =='local_ip':
+        if list_of_variable_names==None:
+            if terraform_payloads.get_payload_variables():
+                for key,value in terraform_payloads.get_payload_variables().items():
                     tf_cloud.create_workspace_variable(payload=value)
-                else:
-                    continue
+        else:
+            if terraform_payloads.get_payload_variables():
+                for key,value in terraform_payloads.get_payload_variables().items():
+                    if key in list_of_variable_names:
+                        tf_cloud.create_workspace_variable(payload=value)
+                    else:
+                        continue
 
+    def update_local_ip_terraform_variable(self):
+        self.update_terraform_variables(list_of_variable_names=['local_ip'])
+        
     def trigger_terraform_run(self):
         tf_session = TFCloudCustom(token=init_proj.get_config_variable('terraform_api_token'),
                                  organization=init_proj.get_config_variable('terraform_organization'),
@@ -172,6 +180,7 @@ if __name__=='__main__':
                                              "init_remote_server",
                                              "init_github",
                                              "trigger_terraform_run",
+                                             "update_terraform_variables",
                                              "update_local_ip_terraform_variable",
                                              "destroy_resources",
                                              "destroy_terraform_resources_workspace"])
@@ -185,7 +194,9 @@ if __name__=='__main__':
     elif args.function == "init_github":
         init_proj.init_github()
     elif args.function == "trigger_terraform_run":
-         init_proj.trigger_terraform_run()    
+         init_proj.trigger_terraform_run()
+    elif args.function == "update_terraform_variables":
+        init_proj.update_terraform_variables()
     elif args.function == "update_local_ip_terraform_variable":
         init_proj.update_local_ip_terraform_variable()
 
