@@ -45,8 +45,6 @@ class ManageProject:
         #set terraform variables
         terraform_payloads.set_payload_variables(variables=self.get_config_variable())
 
-
-
         if terraform_payloads.get_payload_variables():
             for key,value in terraform_payloads.get_payload_variables().items():
                 tf_cloud.create_workspace_variable(payload=value)
@@ -75,7 +73,10 @@ class ManageProject:
             f"mkdir {self.get_config_variable('remote_root_folder_name')}",
             f"cd ./{self.get_config_variable('remote_root_folder_name')} && git clone {https_github_repo}",
             f"cd ./{self.get_config_variable('remote_root_folder_name')} && ssh-keygen -t rsa -b 4096 -N \"\" -f ~/.ssh/id_rsa <<<y >/dev/null 2>&1",
-            f"cd ./{self.get_config_variable('remote_root_folder_name')} && cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys"
+            f"cd ./{self.get_config_variable('remote_root_folder_name')} && cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys",
+            f"cd ./{self.get_config_variable('remote_root_folder_name')}/{self.get_config_variable('github_repository')} && apt install python3-pip && apt install python3-venv && python3 -m venv venv",
+            f"cd ./{self.get_config_variable('remote_root_folder_name')}/{self.get_config_variable('github_repository')} && source venv/bin/activate && python3 -m pip install -r requirements.txt",
+            f"cd ./{self.get_config_variable('remote_root_folder_name')}/{self.get_config_variable('github_repository')} && python3 -m pip install -e ."
             ]
         
         
@@ -121,8 +122,6 @@ class ManageProject:
         for key,value in git_secrets.items():
             git.create_repo_secret(secret_name=key, secret_value=value,owner=self.get_config_variable('github_user'),
                                      repo=self.get_config_variable('github_repository'))
-        
-        print('done!')
 
     def update_terraform_variables(self, list_of_variable_names=None):
         tf_cloud = TFCloudCustom(token=self.get_config_variable('terraform_api_token'),
