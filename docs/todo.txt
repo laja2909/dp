@@ -1,11 +1,19 @@
-# Add s3 resource
+# To the initialisation, we need to add logic of creating venv in there?
+--And everytime syncing job, need to add pip install --requirements.txt there?
+
+# There should be only one config file, but now there is many... terraform variable file and confs.json need to do something about it.
+
+
+
 # Add pytest logic
 # maybe add api class since many apiclasses now uses similar logic.
 
-# To the initialisation, we need to add logic of creating venv in there? And everytime syncing job, need to add pip install --requirements.txt there?
 
 
-# There should be only one config file, but now there is many... terraform variable file and confs.json need to do something about it.
+
+
+
+
 
 
 
@@ -30,6 +38,7 @@ ALSO THINK ABOUT CREATING GLOBAL CONFS FILE FOR ALL NECESSARY VARIABLES!
 
 
 #DONE:
+# Add s3 resource
 # delete legacy git variables, make sure that init_gihtub works, fix main.yml
  -- done
 # should the initialise.py be "ManageProject.py" since it's a class and should it be in the setup folder??
