@@ -1,3 +1,6 @@
+#create update_repo_secret and update_repo_variables where logic is:
+--remove all secrets, and then create all again
+
 # To the initialisation, we need to add logic of creating venv in there?
 --And everytime syncing job, need to add pip install --requirements.txt there?
 

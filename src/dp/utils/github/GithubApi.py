@@ -1,8 +1,11 @@
 import requests
 import json
+from pathlib import Path
 
 from base64 import b64encode
 from nacl import encoding, public
+
+from dp.utils.helper import get_global_confs
 
 class GithubApi:
     """
@@ -92,5 +95,6 @@ class GithubApi:
         return content
     
 if __name__=='__main__':
-    git = GithubApi()
-    git.create_repo_secret(secret_name='test',secret_value='testvalue')
+    confs = get_global_confs(file_path=Path(__file__).parent.parent.parent.joinpath('setup/confs.json').as_posix())
+    git = GithubApi(token=confs['github_api_token']['value'])
+    print(git.get_repo_secrets(owner=confs['github_user']['value'],repo=confs['github_repository']['value']))

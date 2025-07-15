@@ -24,6 +24,13 @@ class ManageProject:
     def get_config(self) -> json:
         return self._config
     
+    def get_main_ids(self):
+        hetz = HetznerApi(api_token=self.get_config_variable('hetzner_api_token'))
+        ip = hetz.get_server_ipv4_by_name(server_name=self.get_config_variable('hetzner_main_server_name'))
+        id_dict = {'hetzner_main_server_ip':ip}
+        print(id_dict)
+
+
     def init_terraform_resources(self):
         tf_cloud = TFCloudCustom(token=self.get_config_variable('terraform_api_token'),
                                  organization=self.get_config_variable('terraform_organization'),
@@ -56,8 +63,8 @@ class ManageProject:
                             workspace=self.get_config_variable('terraform_workspace'))
 
         # copy ssh keys from remote to local
-        tf_cloud.copy_tls_ssh_keys_from_remote_to_local(to_key_name=self.get_config_variable('local_ssh_key_name'),
-                                                       to_ssh_path_name=self.get_config_variable('local_ssh_path'))
+        #tf_cloud.copy_tls_ssh_keys_from_remote_to_local(to_key_name=self.get_config_variable('local_ssh_key_name'),
+        #                                               to_ssh_path_name=self.get_config_variable('local_ssh_path'))
         
         #variables for connecting to server
         hetz_api = HetznerApi(api_token=self.get_config_variable('hetzner_api_token'))
@@ -74,9 +81,12 @@ class ManageProject:
             f"cd ./{self.get_config_variable('remote_root_folder_name')} && git clone {https_github_repo}",
             f"cd ./{self.get_config_variable('remote_root_folder_name')} && ssh-keygen -t rsa -b 4096 -N \"\" -f ~/.ssh/id_rsa <<<y >/dev/null 2>&1",
             f"cd ./{self.get_config_variable('remote_root_folder_name')} && cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys",
-            f"cd ./{self.get_config_variable('remote_root_folder_name')}/{self.get_config_variable('github_repository')} && apt install python3-pip <<<y && apt install python3-venv <<<y && python3 -m venv venv",
+            f"cd ./{self.get_config_variable('remote_root_folder_name')}/{self.get_config_variable('github_repository')} && apt-get update",
+            f"cd ./{self.get_config_variable('remote_root_folder_name')}/{self.get_config_variable('github_repository')} && apt-get install -y python3-pip",
+            f"cd ./{self.get_config_variable('remote_root_folder_name')}/{self.get_config_variable('github_repository')} && apt-get install -y python3-venv",
+            f"cd ./{self.get_config_variable('remote_root_folder_name')}/{self.get_config_variable('github_repository')} && python3 -m venv venv",
             f"cd ./{self.get_config_variable('remote_root_folder_name')}/{self.get_config_variable('github_repository')} && source venv/bin/activate && python3 -m pip install -r requirements.txt",
-            f"cd ./{self.get_config_variable('remote_root_folder_name')}/{self.get_config_variable('github_repository')} && python3 -m pip install -e ."
+            f"cd ./{self.get_config_variable('remote_root_folder_name')}/{self.get_config_variable('github_repository')} && source venv/bin/activate && python3 -m pip install -e ."
             ]
         
         
@@ -181,6 +191,7 @@ if __name__=='__main__':
                                              "trigger_terraform_run",
                                              "update_terraform_variables",
                                              "update_local_ip_terraform_variable",
+                                             "get_main_ids",
                                              "destroy_resources",
                                              "destroy_terraform_resources_workspace"])
 
@@ -198,6 +209,8 @@ if __name__=='__main__':
         init_proj.update_terraform_variables()
     elif args.function == "update_local_ip_terraform_variable":
         init_proj.update_local_ip_terraform_variable()
+    elif args.function == "get_main_ids":
+        init_proj.get_main_ids()
 
     elif args.function == "destroy_resources":
         tf_session = TFCloudCustom(token=init_proj.get_config_variable('terraform_api_token'),
