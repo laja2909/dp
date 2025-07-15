@@ -43,7 +43,7 @@ class ManageProject:
         tf_cloud.create_workspace(payload=terraform_payloads.get_payload_workspace())
         
         #set terraform variables
-        terraform_payloads.set_payload_variables(variables=self.get_config_variable())
+        terraform_payloads.set_payload_variables(variables=self.get_config())
 
         if terraform_payloads.get_payload_variables():
             for key,value in terraform_payloads.get_payload_variables().items():
@@ -74,7 +74,7 @@ class ManageProject:
             f"cd ./{self.get_config_variable('remote_root_folder_name')} && git clone {https_github_repo}",
             f"cd ./{self.get_config_variable('remote_root_folder_name')} && ssh-keygen -t rsa -b 4096 -N \"\" -f ~/.ssh/id_rsa <<<y >/dev/null 2>&1",
             f"cd ./{self.get_config_variable('remote_root_folder_name')} && cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys",
-            f"cd ./{self.get_config_variable('remote_root_folder_name')}/{self.get_config_variable('github_repository')} && apt install python3-pip && apt install python3-venv && python3 -m venv venv",
+            f"cd ./{self.get_config_variable('remote_root_folder_name')}/{self.get_config_variable('github_repository')} && apt install python3-pip <<<y && apt install python3-venv <<<y && python3 -m venv venv",
             f"cd ./{self.get_config_variable('remote_root_folder_name')}/{self.get_config_variable('github_repository')} && source venv/bin/activate && python3 -m pip install -r requirements.txt",
             f"cd ./{self.get_config_variable('remote_root_folder_name')}/{self.get_config_variable('github_repository')} && python3 -m pip install -e ."
             ]
@@ -200,14 +200,14 @@ if __name__=='__main__':
         init_proj.update_local_ip_terraform_variable()
 
     elif args.function == "destroy_resources":
-        tf_session = TFCloudCustom(token=init_proj.get_config_variable()['terraform_api_token']['value'],
-                                 organization=init_proj.get_config_variable()['terraform_organization']['value'],
-                                 workspace=init_proj.get_config_variable()['terraform_workspace']['value'])
+        tf_session = TFCloudCustom(token=init_proj.get_config_variable('terraform_api_token'),
+                                 organization=init_proj.get_config_variable('terraform_organization'),
+                                 workspace=init_proj.get_config_variable('terraform_workspace'))
         tf_session.delete_resources_from_workspace()
     elif args.function == "destroy_terraform_resources_workspace":
-        tf_cloud = TFCloudCustom(token=init_proj.get_config_variable()['terraform_api_token']['value'],
-                                 organization=init_proj.get_config_variable()['terraform_organization']['value'],
-                                 workspace=init_proj.get_config_variable()['terraform_workspace']['value'])
+        tf_cloud = TFCloudCustom(token=init_proj.get_config_variable('terraform_api_token'),
+                                 organization=init_proj.get_config_variable('terraform_organization'),
+                                 workspace=init_proj.get_config_variable('terraform_workspace'))
         tf_cloud.delete_terraform_multiple_objects(objects=['resources','workspace','organization'])
     else:
         print('pass')
