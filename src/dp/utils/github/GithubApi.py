@@ -57,6 +57,52 @@ class GithubApi:
 
         return content
 
+    def update_and_insert_repo_secret(self,secret_name:str,secret_value:str,owner:str,repo:str) -> json:
+        """
+        if secret variable already exists, update it's value, if not create it.
+        
+        """
+        repo_secrets = self.get_repo_secrets(owner=owner, repo=repo).get('secrets')
+        
+        secret_exists = False
+        # loop through repo secrets
+        if repo_secrets!=None:
+            for secret in repo_secrets:
+                if secret['name']==secret_name.upper():
+                    secret_exists=True
+                    break
+                else:
+                    continue
+        
+        if secret_exists:
+            self.delete_repo_secret(secret_name=secret_name,owner=owner,repo=repo)
+            self.create_repo_secret(secret_name=secret_name,secret_value=secret_value,owner=owner,repo=repo)
+        else:
+            self.create_repo_secret(secret_name=secret_name,secret_value=secret_value,owner=owner,repo=repo)
+
+    
+    def update_and_insert_repo_variable(self,var_name:str, var_value:str,owner:str,repo:str) -> json:
+        """
+        if variable already exists, update it's value, if not create it.
+        
+        """
+        repo_variables = self.get_repo_variables(owner=owner, repo=repo).get('variables')
+        
+        variable_exists = False
+        # loop through repo secrets
+        if repo_variables!=None:
+            for variable in repo_variables:
+                if variable['name']==var_name.upper():
+                    variable_exists=True
+                    break
+                else:
+                    continue
+        
+        if variable_exists:
+            self.delete_repo_variable(var_name=var_name,owner=owner,repo=repo)
+            self.create_repo_variable(var_name=var_name,var_value=var_value,owner=owner,repo=repo)
+        else:
+            self.create_repo_variable(var_name=var_name,var_value=var_value,owner=owner,repo=repo)
 
     def get_repo_secrets(self,owner:str,repo:str) -> json:
 
@@ -69,6 +115,20 @@ class GithubApi:
 
         end_point = f'https://api.github.com/repos/{owner}/{repo}/actions/variables'
         response = self.call_api('GET',end_point=end_point)
+        content = self.get_content_response(response)
+        return content
+    
+    #DELETE
+    def delete_repo_variable(self,var_name:str,owner:str,repo:str) -> json:
+
+        end_point = f'https://api.github.com/repos/{owner}/{repo}/actions/variables/{var_name}'
+        response = self.call_api('DELETE',end_point=end_point)
+        content = self.get_content_response(response)
+        return content
+    
+    def delete_repo_secret(self,secret_name:str,owner:str,repo:str) -> json:
+        end_point = f'https://api.github.com/repos/{owner}/{repo}/actions/secrets/{secret_name}'
+        response = self.call_api('DELETE',end_point=end_point)
         content = self.get_content_response(response)
         return content
 
@@ -87,14 +147,17 @@ class GithubApi:
         Response is always in json object
         
         """
-        try:
-            content = response.json()
-            print("retrieved the response..")
-        except json.JSONDecodeError as e:
-            raise Exception('No response: ', e)
+        if response.status_code==204:##No content
+            content = {}
+        else:
+            try:
+                content = response.json()
+                print("retrieved the response..")
+            except json.JSONDecodeError as e:
+                raise Exception('No response: ', e)
         return content
     
 if __name__=='__main__':
     confs = get_global_confs(file_path=Path(__file__).parent.parent.parent.joinpath('setup/confs.json').as_posix())
     git = GithubApi(token=confs['github_api_token']['value'])
-    print(git.get_repo_secrets(owner=confs['github_user']['value'],repo=confs['github_repository']['value']))
+    print(git.update_and_insert_repo_variable(var_name='test',var_value='test',owner=confs['github_user']['value'],repo=confs['github_repository']['value']))

@@ -63,8 +63,8 @@ class ManageProject:
                             workspace=self.get_config_variable('terraform_workspace'))
 
         # copy ssh keys from remote to local
-        #tf_cloud.copy_tls_ssh_keys_from_remote_to_local(to_key_name=self.get_config_variable('local_ssh_key_name'),
-        #                                               to_ssh_path_name=self.get_config_variable('local_ssh_path'))
+        tf_cloud.copy_tls_ssh_keys_from_remote_to_local(to_key_name=self.get_config_variable('local_ssh_key_name'),
+                                                       to_ssh_path_name=self.get_config_variable('local_ssh_path'))
         
         #variables for connecting to server
         hetz_api = HetznerApi(api_token=self.get_config_variable('hetzner_api_token'))
