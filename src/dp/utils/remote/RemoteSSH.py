@@ -4,10 +4,11 @@ import paramiko
 from dp.utils.hetzner.HetznerApi import HetznerApi
 
 class RemoteSSH:
-    def __init__(self, hostname:str,port:int=22, user:str='root'):
+    def __init__(self, hostname:str, port:int, user:str, private_key_name:str):
         self._hostname = hostname
         self._port = port
         self._user = user
+        self._private_key_name = private_key_name
     
     def get_hostname(self):
         return self._hostname
@@ -17,18 +18,21 @@ class RemoteSSH:
     
     def get_user(self):
         return self._user
+    
+    def get_private_key_name(self):
+        return self._private_key_name
 
-    def execute_via_private_key(self,command:str,private_key_path:str, 
-                                key_name:str):
+    def execute_via_private_key(self,command:str):
         #create ssh client
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        
-        private_key_full_path = Path(private_key_path).joinpath(key_name)
-        private_key = paramiko.RSAKey.from_private_key_file(private_key_full_path)
+        private_key = paramiko.RSAKey.from_private_key_file(self.get_private_key_name())
         try:
             #connect
-            ssh.connect(hostname=self.get_hostname(), port=self.get_port(), username=self.get_user(), pkey=private_key)
+            ssh.connect(hostname=self.get_hostname(),
+                        port=self.get_port(),
+                        username=self.get_user(),
+                        pkey=private_key)
             # Execute the command
             stdin, stdout, stderr = ssh.exec_command(command)
             # Fetch output and errors
@@ -44,17 +48,17 @@ class RemoteSSH:
         finally:
             ssh.close()
     
-    def get_file_content_via_sftp(self,target_file_path:str,
-                                  private_key_path:str, 
-                                  key_name:str):
+    def get_file_content_via_sftp(self,target_file_path:str):
         #create ssh client
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        private_key_full_path = Path(private_key_path).joinpath(key_name)
-        private_key = paramiko.RSAKey.from_private_key_file(private_key_full_path)
+        private_key = paramiko.RSAKey.from_private_key_file(self.get_private_key_name())
 
         try:
-            ssh.connect(hostname=self.get_hostname(), port=self.get_port(), username=self.get_user(), pkey=private_key)
+            ssh.connect(hostname=self.get_hostname(),
+                        port=self.get_port(),
+                        username=self.get_user(),
+                        pkey=private_key)
             try:
                 sftp = ssh.open_sftp()
                 with sftp.file(target_file_path, 'r') as remote_file:

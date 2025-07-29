@@ -1,6 +1,8 @@
 import json
 
 from dp.utils.terraform.TFCloudCustom import TFCloudCustom
+from dp.utils.hetzner.HetznerApi import HetznerApi
+from dp.utils.remote.RemoteSSH import RemoteSSH
 from dp.utils.helper import get_public_ip_address
 
 
@@ -67,7 +69,7 @@ class PayloadsTerraform:
     def set_payload_variables(self,variables:dict):
         final_variable_dict = {}
 
-        #local ip variable
+        #dynamic variables
         final_variable_dict.update(
         {"local_ip":
             {"data": {
@@ -83,6 +85,7 @@ class PayloadsTerraform:
             }}
         })
         
+        #static variables
         for key,value in variables.items():
             if value.get("terraform_configurations"):
                 final_variable_dict.update(
@@ -100,3 +103,48 @@ class PayloadsTerraform:
                         }
                     }})
         self._payload_variables = final_variable_dict
+    
+    
+
+class VariablesGithub:
+    def __init__(self):
+        pass
+
+    def get_github_variables(self):
+        return self._github_variables
+    
+    def set_github_variables(self,variables:dict):
+        #static variables
+        final_variable_dict = {}
+        for key,value in variables.items():
+            if value.get("github_configurations"):
+                final_variable_dict.update({key:value})
+        
+        #dynamic variables
+        hetz_api = HetznerApi(api_token=variables['hetzner_api_token']['value'])
+        ip = hetz_api.get_server_ipv4_by_name(server_name=variables['hetzner_main_server_name']['value'])
+        ssh = RemoteSSH(hostname=ip,
+                        port=variables['hetzner_firewall_ssh_port']['value'], 
+                        user=variables['remote_user']['value'])
+        private_key_content = ssh.get_file_content_via_sftp(target_file_path=f"/{ssh.get_user()}/.ssh/id_rsa")
+        
+        final_variable_dict.update({'REMOTE_SSH_HOST_IP':
+                                        {'value':ip,
+                                         'terraform_configurations':None,
+                                         'github_configurations':{
+                                             'is_github_variable':"True",
+                                             'is_sensitive':"True"
+                                             }
+                                        }
+                                    })
+        final_variable_dict.update({'REMOTE_SSH_PRIVATE_KEY':
+                                        {'value':private_key_content,
+                                         'terraform_configurations':None,
+                                         'github_configurations':{
+                                             'is_github_variable':"True",
+                                             'is_sensitive':"True"
+                                             }
+                                        }
+                                    })
+        
+        self._github_variables = final_variable_dict

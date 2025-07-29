@@ -43,7 +43,8 @@ def get_global_confs(file_path:str):
                 raise Exception('Invalid variable type')
             
             flattened_data.update({name_of_key:{'value':value_of_key,
-                                                'terraform_configurations':value.get('terraform_configurations')}
+                                                'terraform_configurations':value.get('terraform_configurations'),
+                                                'github_configurations':value.get('github_configurations')}
                                     })
     return flattened_data
 
