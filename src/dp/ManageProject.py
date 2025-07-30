@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 import argparse
 
-from dp.setup.source_confs import PayloadsTerraform, VariablesGithub
+from dp.setup.source_confs import InitTerraform, InitGithub, InitRemote
 from dp.utils.terraform.TFCloudCustom import TFCloudCustom
 from dp.utils.remote.RemoteSSH import RemoteSSH
 from dp.utils.hetzner.HetznerApi import HetznerApi
@@ -37,7 +37,7 @@ class ManageProject:
                                  workspace=self.get_config_variable('terraform_workspace'))
         
         #create terraform objects
-        terraform_payloads = PayloadsTerraform(tf_cloud, self.get_config())
+        terraform_payloads = InitTerraform(tf_cloud, self.get_config())
         tf_cloud.create_organization(payload=terraform_payloads.get_payload_organization())
         tf_cloud.create_oauth_client(payload=terraform_payloads.get_payload_vcp())
         terraform_payloads.set_payload_workspace(workspace_name=tf_cloud.get_workspace_name(),
@@ -53,55 +53,26 @@ class ManageProject:
         
 
     def init_remote_server(self):
-        tf_cloud = TFCloudCustom(token=self.get_config_variable('terraform_api_token'),
-                            organization=self.get_config_variable('terraform_organization'),
-                            workspace=self.get_config_variable('terraform_workspace'))
-
-        # copy ssh keys from remote to local
-        tf_cloud.copy_tls_ssh_keys_from_remote_to_local(to_key_name=self.get_config_variable('local_ssh_key_name'),
-                                                       to_ssh_path_name=self.get_config_variable('local_ssh_path'))
-        
-        # run commands in remote server
-        ## variables for connecting to remote server
+        # variables for connecting to remote server
         hetz_api = HetznerApi(api_token=self.get_config_variable('hetzner_api_token'))
         ip = hetz_api.get_server_ipv4_by_name(server_name=self.get_config_variable('hetzner_main_server_name'))
-        https_github_repo = f"https://github.com/{self.get_config_variable('github_user')}/{self.get_config_variable('github_repository')}.git"
-        commands = [
-            #create project directory
-            f"mkdir {self.get_config_variable('remote_root_folder_name')}",
-            #clone repo to project directory
-            f"cd ./{self.get_config_variable('remote_root_folder_name')} && git clone {https_github_repo}",
-            #generate ssh-key
-            f"cd ./{self.get_config_variable('remote_root_folder_name')} && ssh-keygen -t rsa -b 4096 -N \"\" -f ~/.ssh/id_rsa <<<y >/dev/null 2>&1",
-            #copy ssh key content to authorized keys
-            f"cd ./{self.get_config_variable('remote_root_folder_name')} && cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys",
-            #install python devs
-            f"cd ./{self.get_config_variable('remote_root_folder_name')}/{self.get_config_variable('github_repository')} && apt-get update",
-            f"cd ./{self.get_config_variable('remote_root_folder_name')}/{self.get_config_variable('github_repository')} && apt-get install -y python3-pip",
-            f"cd ./{self.get_config_variable('remote_root_folder_name')}/{self.get_config_variable('github_repository')} && apt-get install -y python3-venv",
-            #create venv
-            f"cd ./{self.get_config_variable('remote_root_folder_name')}/{self.get_config_variable('github_repository')} && python3 -m venv venv",
-            #activate venv and install requirements
-            f"cd ./{self.get_config_variable('remote_root_folder_name')}/{self.get_config_variable('github_repository')} && source venv/bin/activate && python3 -m pip install -r requirements.txt",
-            #activate venv and install project in editable state to get the imports work correctly
-            f"cd ./{self.get_config_variable('remote_root_folder_name')}/{self.get_config_variable('github_repository')} && source venv/bin/activate && python3 -m pip install -e ."
-            ]
-        
-        
         # initialise connection
         ssh = RemoteSSH(hostname=ip,
                         port=self.get_config_variable('hetzner_firewall_ssh_port'),
                         user=self.get_config_variable('remote_user'),
                         private_key_name=Path(self.get_config_variable('local_ssh_path')).joinpath(self.get_config_variable('local_ssh_key_name')).as_posix()
         )
-    
-        #run commands
-        for cmd in commands:
-            ssh.execute_via_private_key(command=cmd)
+
+
+        #initialise remote script
+        remote_script = InitRemote()
+        remote_script.set_initialisation_script(variables=self.get_config())
+        
+        ssh.execute_via_private_key(command=remote_script.get_initialisation_script())
         
     def init_github(self):
         git = GithubApi(token=self.get_config_variable('github_api_token'))
-        github_variables = VariablesGithub()
+        github_variables = InitGithub()
         github_variables.set_github_variables(variables=self.get_config())
 
         git_vars = {}
@@ -125,7 +96,7 @@ class ManageProject:
                                  organization=self.get_config_variable('terraform_organization'),
                                  workspace=self.get_config_variable('terraform_workspace'))
         
-        terraform_payloads = PayloadsTerraform(tf_cloud, self.get_config())
+        terraform_payloads = InitTerraform(tf_cloud, self.get_config())
         #set terraform variables
         terraform_payloads.set_payload_variables(variables=self.get_config())
         

@@ -61,6 +61,12 @@ jobs:
     - name: update repository in hetzner server
       run: ssh ${{ secrets.REMOTE_SSH_USER }}@${{ secrets.REMOTE_SSH_HOST_IP }} "cd ${{ vars.REMOTE_ROOT_FOLDER_NAME }}/${{ vars.GIT_REPOSITORY }} && git checkout ${{ vars.GIT_MAIN_BRANCH_NAME }} && git pull && exit"
 
+    - name: update remote server requirements.txt
+      run: ssh ${{ secrets.REMOTE_SSH_USER }}@${{ secrets.REMOTE_SSH_HOST_IP }} "cd ${{ vars.REMOTE_ROOT_FOLDER_NAME }}/${{ vars.GIT_REPOSITORY }} && source venv/bin/activate && python3 -m pip install -r requirements.txt && exit"
+
+    - name: in remote server update project as editable state
+      run: ssh ${{ secrets.REMOTE_SSH_USER }}@${{ secrets.REMOTE_SSH_HOST_IP }} "cd ${{ vars.REMOTE_ROOT_FOLDER_NAME }}/${{ vars.GIT_REPOSITORY }} && source venv/bin/activate && python3 -m pip install -e . && exit"
+
     - name: get firewall resource hetzner id
       id: get_firewall_id
       if: steps.create_firewall.outcome == 'success'

@@ -6,7 +6,7 @@ from dp.utils.remote.RemoteSSH import RemoteSSH
 from dp.utils.helper import get_public_ip_address
 
 
-class PayloadsTerraform:
+class InitTerraform:
     def __init__(self, tf_instance:TFCloudCustom, config_variables:json):
         self.terraform_cloud_instance = tf_instance
         
@@ -104,9 +104,33 @@ class PayloadsTerraform:
                     }})
         self._payload_variables = final_variable_dict
     
-    
 
-class VariablesGithub:
+class InitRemote:
+    def __init__(self):
+        pass
+
+    def get_initialisation_script(self):
+        return self._initialisation_script
+
+    def set_initialisation_script(self,variables:dict):
+        https_github_repo = f"https://github.com/{variables['github_user']['value']}/{variables['github_repository']}.git"
+        self._initialisation_script = f"""
+        set -e
+        mkdir -p {variables['remote_root_folder_name']['value']}
+        cd {variables['remote_root_folder_name']['value']}
+        git clone {https_github_repo}
+        ssh-keygen -t rsa -b 4096 -N \"\" -f ~/.ssh/id_rsa <<<y >/dev/null 2>&1
+        cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+        cd {variables['github_repository']}
+        sudo apt-get update
+        sudo apt-get install -y python3-pip python3-venv
+        python3 -m venv venv
+        source venv/bin/activate
+        python3 -m pip install -r requirements.txt
+        python3 -m pip install -e .
+        """
+
+class InitGithub:
     def __init__(self):
         pass
 
