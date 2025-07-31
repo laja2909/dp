@@ -7,6 +7,7 @@ from dp.utils.terraform.TFCloudCustom import TFCloudCustom
 from dp.utils.remote.RemoteSSH import RemoteSSH
 from dp.utils.hetzner.HetznerApi import HetznerApi
 from dp.utils.github.GithubApi import GithubApi
+from dp.utils.aws.AWS import AWS
 
 from dp.utils.helper import get_global_confs
 
@@ -28,9 +29,32 @@ class ManageProject:
         hetz = HetznerApi(api_token=self.get_config_variable('hetzner_api_token'))
         ip = hetz.get_server_ipv4_by_name(server_name=self.get_config_variable('hetzner_main_server_name'))
         id_dict = {'hetzner_main_server_ip':ip}
-        print(id_dict)
+        return id_dict
+    
+    def get_project_objects_status(self):
+        """
+        checks default project objects if they are actively running
+        """
+        project_objects = {}
+        #check for terraform objects
+        tf_cloud = TFCloudCustom(token=self.get_config_variable('terraform_api_token'),
+                                 organization=self.get_config_variable('terraform_organization'),
+                                 workspace=self.get_config_variable('terraform_workspace'))
+        ## organization
+        project_objects.update({'terraform_organization':tf_cloud.has_terraform_organization()})
 
+        #check for hetzner
+        hetz_api = HetznerApi(api_token=self.get_config_variable('hetzner_api_token'))
+        ##servers
+        project_objects.update({'hetzner_servers':hetz_api.has_servers_running()})
 
+        #check for aws
+        aws_api = AWS(aws_access_key=self.get_config_variable('aws_access_key'), aws_secret_access_key=self.get_config_variable('aws_secret_access_key'))
+        ##bucket
+        project_objects.update({'aws_bucket':aws_api.has_bucket(bucket_name=self.get_config_variable('aws_s3_bucket_name'))})
+        return project_objects
+
+    #INITIALISATIONS
     def init_terraform_resources(self):
         tf_cloud = TFCloudCustom(token=self.get_config_variable('terraform_api_token'),
                                  organization=self.get_config_variable('terraform_organization'),
@@ -111,10 +135,11 @@ class ManageProject:
                         tf_cloud.create_workspace_variable(payload=value)
                     else:
                         continue
-
+    #UPDATES
     def update_local_ip_terraform_variable(self):
         self.update_terraform_variables(list_of_variable_names=['local_ip'])
-        
+    
+    #RUNS
     def trigger_terraform_run(self):
         tf_session = TFCloudCustom(token=init_proj.get_config_variable('terraform_api_token'),
                                  organization=init_proj.get_config_variable('terraform_organization'),
@@ -135,6 +160,8 @@ class ManageProject:
                 }
             }}
         tf_session.run_in_runs_end_point(payload=payload_trigger_run)
+    
+    
 
         
     
@@ -150,6 +177,7 @@ if __name__=='__main__':
                                              "update_terraform_variables",
                                              "update_local_ip_terraform_variable",
                                              "get_main_ids",
+                                             "get_project_objects_status",
                                              "destroy_resources",
                                              "destroy_terraform_resources_workspace"])
 
@@ -169,6 +197,9 @@ if __name__=='__main__':
         init_proj.update_local_ip_terraform_variable()
     elif args.function == "get_main_ids":
         init_proj.get_main_ids()
+    elif args.function == "get_project_objects_status":
+        project_objects_statuses = init_proj.get_project_objects_status()
+        print(project_objects_statuses)
 
     elif args.function == "destroy_resources":
         tf_session = TFCloudCustom(token=init_proj.get_config_variable('terraform_api_token'),

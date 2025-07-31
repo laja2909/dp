@@ -2,6 +2,9 @@ import json
 import time
 
 import requests
+from pathlib import Path
+
+from dp.utils.helper import get_global_confs 
 
 class TFCloud:
     """
@@ -307,6 +310,17 @@ class TFCloud:
         variable_value = self.get_variable_value(variable_name)
         return comparison_value==variable_value
     
+    def has_terraform_organization(self) -> bool:
+        end_point = f'https://app.terraform.io/api/v2/organizations/{self.get_organization_name()}'
+        response = self.call_api('GET',end_point=end_point)
+        if response.status_code==200:
+            has_organization=True
+        elif response.status_code==404:
+            has_organization = False
+        else:
+            response.raise_for_status()
+        return has_organization
+    
     def has_workspace_resources_running(self) -> bool:
         workspace_id = self.get_workspace_id()
         resources = self.get_resources_from_workspace(workspace_id)
@@ -318,5 +332,6 @@ class TFCloud:
 
     
 if __name__=='__main__':
-    tf_api = TFCloud()
-    print(tf_api.get_oauth_client_id_by_service_provider('github'))
+    confs = get_global_confs(file_path=Path(__file__).parent.parent.parent.joinpath('setup/confs.json').as_posix())
+    tf_api = TFCloud(token=confs['terraform_api_token']['value'],workspace='test',organization='test')
+    print(tf_api.has_terraform_organization(tf_api.get_organization_name()))

@@ -1,4 +1,5 @@
 # test if the initialisation still works
+## create test functions to determine if terraform resources or aws or hetzner resources exist
 # There should be only one config file, but now there is many... terraform variable file and confs.json need to do something about it.
 
 # Add pytest logic
