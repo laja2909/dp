@@ -12,7 +12,7 @@
         },
         "organization":{
             "type":"RAW",
-            "name":"dp-data-platform",
+            "name":"dp-data-platform-v2",
             "description":"name of default organization name for the project"
         },
         "workspace":{
@@ -35,7 +35,14 @@
         "repository":{
             "type":"LOCAL_ENV",
             "name":"GH_REPOSITORY_NAME",
-            "description":"local environment variable to store github repository name"
+            "description":"local environment variable to store github repository name",
+            "github_configurations": {"is_github_variable": "True", "is_sensitive":"False"}
+        },
+        "main_branch_name":{
+            "type":"RAW",
+            "name":"main",
+            "description":"name of the production branch",
+            "github_configurations": {"is_github_variable": "True", "is_sensitive":"False"}
         },
         "tc_client_id":{
             "type":"LOCAL_ENV",
@@ -53,13 +60,15 @@
             "type":"LOCAL_ENV",
             "name":"HETZ_TOKEN",
             "description":"local environment variable to store hetzner api key",
-            "terraform_configurations": {"is_terraform_variable": "True","is_sensitive":"True"}
+            "terraform_configurations": {"is_terraform_variable": "True","is_sensitive":"True"},
+            "github_configurations": {"is_github_variable": "True", "is_sensitive":"True"}
         },
         "main_server_name":{
             "type":"RAW",
             "name":"dp",
             "description":"name of remote server",
-            "terraform_configurations": {"is_terraform_variable": "True","is_sensitive":"False"}
+            "terraform_configurations": {"is_terraform_variable": "True","is_sensitive":"False"},
+            "github_configurations": {"is_github_variable": "True", "is_sensitive":"False"}
         },
         "main_server_type":{
             "type":"RAW",
@@ -147,7 +156,8 @@
         "user":{
             "type":"LOCAL_ENV",
             "name":"REMOTE_USER",
-            "description":"user of remote server"
+            "description":"user of remote server",
+            "github_configurations": {"is_github_variable": "True", "is_sensitive":"True"}
         },
         "ssh_path_name":{
             "type":"LOCAL_ENV",
@@ -157,7 +167,8 @@
         "root_folder_name":{
             "type":"RAW",
             "name":"projects",
-            "description":"remote ssh path to which ssh keys are stored. you can use ~/.ssh for default"
+            "description":"remote ssh path to which ssh keys are stored. you can use ~/.ssh for default",
+            "github_configurations": {"is_github_variable": "True", "is_sensitive":"False"}
         }
     }
 

@@ -1,10 +1,12 @@
 import json
 
 from dp.utils.terraform.TFCloudCustom import TFCloudCustom
+from dp.utils.hetzner.HetznerApi import HetznerApi
+from dp.utils.remote.RemoteSSH import RemoteSSH
 from dp.utils.helper import get_public_ip_address
 
 
-class PayloadsTerraform:
+class InitTerraform:
     def __init__(self, tf_instance:TFCloudCustom, config_variables:json):
         self.terraform_cloud_instance = tf_instance
         
@@ -67,7 +69,7 @@ class PayloadsTerraform:
     def set_payload_variables(self,variables:dict):
         final_variable_dict = {}
 
-        #local ip variable
+        #dynamic variables
         final_variable_dict.update(
         {"local_ip":
             {"data": {
@@ -83,6 +85,7 @@ class PayloadsTerraform:
             }}
         })
         
+        #static variables
         for key,value in variables.items():
             if value.get("terraform_configurations"):
                 final_variable_dict.update(
@@ -100,3 +103,73 @@ class PayloadsTerraform:
                         }
                     }})
         self._payload_variables = final_variable_dict
+    
+
+class InitRemote:
+    def __init__(self):
+        pass
+
+    def get_initialisation_script(self):
+        return self._initialisation_script.strip()
+
+    def set_initialisation_script(self,variables:dict):
+        https_github_repo = f"https://github.com/{variables['github_user']['value']}/{variables['github_repository']['value']}.git"
+        self._initialisation_script = f"""
+        set -e
+        mkdir -p {variables['remote_root_folder_name']['value']}
+        cd {variables['remote_root_folder_name']['value']}
+        git clone {https_github_repo}
+        ssh-keygen -t rsa -b 4096 -N \"\" -f ~/.ssh/id_rsa <<<y >/dev/null 2>&1
+        cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+        cd {variables['github_repository']['value']}
+        sudo apt-get update
+        sudo apt-get install -y python3-pip python3-venv
+        python3 -m venv venv
+        source venv/bin/activate
+        python3 -m pip install -r requirements.txt
+        python3 -m pip install -e .
+        """
+
+class InitGithub:
+    def __init__(self):
+        pass
+
+    def get_github_variables(self):
+        return self._github_variables
+    
+    def set_github_variables(self,variables:dict):
+        #static variables
+        final_variable_dict = {}
+        for key,value in variables.items():
+            if value.get("github_configurations"):
+                final_variable_dict.update({key:value})
+        
+        #dynamic variables
+        hetz_api = HetznerApi(api_token=variables['hetzner_api_token']['value'])
+        ip = hetz_api.get_server_ipv4_by_name(server_name=variables['hetzner_main_server_name']['value'])
+        ssh = RemoteSSH(hostname=ip,
+                        port=variables['hetzner_firewall_ssh_port']['value'], 
+                        user=variables['remote_user']['value'],
+                        private_key_name=f"{variables['local_ssh_path']['value']}/{variables['local_ssh_key_name']['value']}")
+        private_key_content = ssh.get_file_content_via_sftp(target_file_path=f"/{ssh.get_user()}/.ssh/id_rsa")
+        
+        final_variable_dict.update({'REMOTE_SSH_HOST_IP':
+                                        {'value':ip,
+                                         'terraform_configurations':None,
+                                         'github_configurations':{
+                                             'is_github_variable':"True",
+                                             'is_sensitive':"True"
+                                             }
+                                        }
+                                    })
+        final_variable_dict.update({'REMOTE_SSH_PRIVATE_KEY':
+                                        {'value':private_key_content,
+                                         'terraform_configurations':None,
+                                         'github_configurations':{
+                                             'is_github_variable':"True",
+                                             'is_sensitive':"True"
+                                             }
+                                        }
+                                    })
+        
+        self._github_variables = final_variable_dict

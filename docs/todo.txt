@@ -1,14 +1,12 @@
-# To the initialisation, we need to add logic of creating venv in there?
---And everytime syncing job, need to add pip install --requirements.txt there?
+# test if the initialisation still works
+
+# airflow
+# postgres database
 
 # There should be only one config file, but now there is many... terraform variable file and confs.json need to do something about it.
 
-
-
 # Add pytest logic
 # maybe add api class since many apiclasses now uses similar logic.
-
-
 
 
 
@@ -38,6 +36,17 @@ ALSO THINK ABOUT CREATING GLOBAL CONFS FILE FOR ALL NECESSARY VARIABLES!
 
 
 #DONE:
+## create test functions to determine if terraform resources or aws or hetzner resources exist
+#And everytime syncing job, need to add pip install --requirements.txt there?
+# init github:
+--use similar principal as with terraform variables
+---save to configuration file and use some payload script
+#init_remote:
+--save connections while initialisation, not in the functions
+--save commands to file and run that file, how to make it work?
+# To the initialisation, we need to add logic of creating venv in there?
+#create update_repo_secret and update_repo_variables where logic is:
+--remove all secrets, and then create all again
 # Add s3 resource
 # delete legacy git variables, make sure that init_gihtub works, fix main.yml
  -- done
