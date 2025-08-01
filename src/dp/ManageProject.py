@@ -63,6 +63,7 @@ class ManageProject:
         #create terraform objects
         terraform_payloads = InitTerraform(tf_cloud, self.get_config())
         tf_cloud.create_organization(payload=terraform_payloads.get_payload_organization())
+        
         tf_cloud.create_oauth_client(payload=terraform_payloads.get_payload_vcp())
         terraform_payloads.set_payload_workspace(workspace_name=tf_cloud.get_workspace_name(),
                                                  github_user=self.get_config_variable('github_user'),

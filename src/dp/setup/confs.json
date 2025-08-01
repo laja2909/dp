@@ -12,7 +12,7 @@
         },
         "organization":{
             "type":"RAW",
-            "name":"dp-data-platform",
+            "name":"dp-data-platform-v1",
             "description":"name of default organization name for the project"
         },
         "workspace":{
