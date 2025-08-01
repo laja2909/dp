@@ -3,9 +3,10 @@ import json
 
 from pathlib import Path
 
-from dp.utils.helper import get_global_confs 
+from dp.utils.helper import get_global_confs
+from dp.utils.general.API import API
 
-class HetznerApi:
+class HetznerApi(API):
     def __init__(self, api_token:str):
         self._header = {'Authorization': 'Bearer '+ api_token}
 
@@ -13,8 +14,8 @@ class HetznerApi:
         return self._header
     
     def get_all_servers(self):
-        end_point = 'https://api.hetzner.cloud/v1/servers'
-        response = self.call_api('GET',end_point=end_point)
+        endpoint = 'https://api.hetzner.cloud/v1/servers'
+        response = self.call_endpoint(method='GET', endpoint=endpoint,headers=self.get_header())
         content = self.get_content_response(response)
         return content
     
@@ -36,28 +37,6 @@ class HetznerApi:
         else:
             has_servers_running = False
         return has_servers_running
-
-    #UTILS
-    def call_api(self,method,end_point,payload:json=None) -> requests.Response:
-        if payload!=None:
-            print(f'Calling: {end_point}')
-            response = requests.request(method, end_point, headers=self.get_header(),data=json.dumps(payload))
-        else:
-            print(f'Calling: {end_point}')
-            response = requests.request(method, end_point, headers=self.get_header())
-        return response
-    
-    def get_content_response(self,response:requests.Response) -> json:
-        """
-        Response is always in json object
-        
-        """
-        try:
-            content = response.json()
-            print("retrieved the response..")
-        except json.JSONDecodeError as e:
-            raise Exception('No response: ', e)
-        return content
 
 
 if __name__=='__main__':

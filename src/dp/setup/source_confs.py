@@ -110,10 +110,10 @@ class InitRemote:
         pass
 
     def get_initialisation_script(self):
-        return self._initialisation_script
+        return self._initialisation_script.strip()
 
     def set_initialisation_script(self,variables:dict):
-        https_github_repo = f"https://github.com/{variables['github_user']['value']}/{variables['github_repository']}.git"
+        https_github_repo = f"https://github.com/{variables['github_user']['value']}/{variables['github_repository']['value']}.git"
         self._initialisation_script = f"""
         set -e
         mkdir -p {variables['remote_root_folder_name']['value']}
@@ -121,7 +121,7 @@ class InitRemote:
         git clone {https_github_repo}
         ssh-keygen -t rsa -b 4096 -N \"\" -f ~/.ssh/id_rsa <<<y >/dev/null 2>&1
         cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
-        cd {variables['github_repository']}
+        cd {variables['github_repository']['value']}
         sudo apt-get update
         sudo apt-get install -y python3-pip python3-venv
         python3 -m venv venv
@@ -149,7 +149,8 @@ class InitGithub:
         ip = hetz_api.get_server_ipv4_by_name(server_name=variables['hetzner_main_server_name']['value'])
         ssh = RemoteSSH(hostname=ip,
                         port=variables['hetzner_firewall_ssh_port']['value'], 
-                        user=variables['remote_user']['value'])
+                        user=variables['remote_user']['value'],
+                        private_key_name=f"{variables['local_ssh_path']['value']}/{variables['local_ssh_key_name']['value']}")
         private_key_content = ssh.get_file_content_via_sftp(target_file_path=f"/{ssh.get_user()}/.ssh/id_rsa")
         
         final_variable_dict.update({'REMOTE_SSH_HOST_IP':

@@ -1,12 +1,12 @@
 # test if the initialisation still works
 
+# airflow
+# postgres database
+
 # There should be only one config file, but now there is many... terraform variable file and confs.json need to do something about it.
 
 # Add pytest logic
 # maybe add api class since many apiclasses now uses similar logic.
-
-# airflow
-# postgres database
 
 
 

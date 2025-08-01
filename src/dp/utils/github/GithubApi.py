@@ -6,8 +6,9 @@ from base64 import b64encode
 from nacl import encoding, public
 
 from dp.utils.helper import get_global_confs
+from dp.utils.general.API import API
 
-class GithubApi:
+class GithubApi(API):
     """
     Class to help with Github API calls
     
@@ -20,10 +21,10 @@ class GithubApi:
         return self._header
     
     def create_repo_variable(self,var_name:str, var_value:str,owner:str,repo:str) -> json:
-        end_point = f'https://api.github.com/repos/{owner}/{repo}/actions/variables'
+        endpoint = f'https://api.github.com/repos/{owner}/{repo}/actions/variables'
 
         payload = {'name':var_name, 'value':var_value}
-        response = self.call_api('POST',end_point=end_point, payload=payload)
+        response = self.call_endpoint(method='POST',endpoint=endpoint, headers=self.get_header(),payload=payload)
         content = self.get_content_response(response)
         return content
     
@@ -38,8 +39,8 @@ class GithubApi:
     def create_repo_secret(self,secret_name:str, secret_value:str,owner:str,repo:str) -> json:
         
         #get public key
-        end_point_public_key = f'https://api.github.com/repos/{owner}/{repo}/actions/secrets/public-key'
-        response = self.call_api('GET',end_point=end_point_public_key)
+        endpoint_public_key = f'https://api.github.com/repos/{owner}/{repo}/actions/secrets/public-key'
+        response = self.call_endpoint(method='GET',endpoint=endpoint_public_key, headers=self.get_header())
         content = self.get_content_response(response)
         public_key = content["key"]
         key_id = content["key_id"]
@@ -48,11 +49,11 @@ class GithubApi:
         encrypted_secret = self.encrypt(public_key,secret_value)
 
         #upload secret
-        end_point_secret_url = f"https://api.github.com/repos/{owner}/{repo}/actions/secrets/{secret_name}"
+        endpoint_secret_url = f"https://api.github.com/repos/{owner}/{repo}/actions/secrets/{secret_name}"
         payload = {
              "encrypted_value": encrypted_secret,
              "key_id": key_id}
-        response = self.call_api('PUT',end_point=end_point_secret_url, payload=payload)
+        response = self.call_endpoint(method='PUT',endpoint=endpoint_secret_url,headers=self.get_header(),payload=payload)
         content = self.get_content_response(response)
 
         return content
@@ -106,55 +107,30 @@ class GithubApi:
 
     def get_repo_secrets(self,owner:str,repo:str) -> json:
 
-        end_point = f'https://api.github.com/repos/{owner}/{repo}/actions/secrets'
-        response = self.call_api('GET',end_point=end_point)
+        endpoint = f'https://api.github.com/repos/{owner}/{repo}/actions/secrets'
+        response = self.call_endpoint(method='GET',endpoint=endpoint, headers=self.get_header())
         content = self.get_content_response(response)
         return content
     
     def get_repo_variables(self,owner:str,repo:str) -> json:
 
-        end_point = f'https://api.github.com/repos/{owner}/{repo}/actions/variables'
-        response = self.call_api('GET',end_point=end_point)
+        endpoint = f'https://api.github.com/repos/{owner}/{repo}/actions/variables'
+        response = self.call_endpoint(method='GET',endpoint=endpoint,headers=self.get_header())
         content = self.get_content_response(response)
         return content
     
     #DELETE
     def delete_repo_variable(self,var_name:str,owner:str,repo:str) -> json:
 
-        end_point = f'https://api.github.com/repos/{owner}/{repo}/actions/variables/{var_name}'
-        response = self.call_api('DELETE',end_point=end_point)
+        endpoint = f'https://api.github.com/repos/{owner}/{repo}/actions/variables/{var_name}'
+        response = self.call_endpoint(method='DELETE',endpoint=endpoint, headers=self.get_header())
         content = self.get_content_response(response)
         return content
     
     def delete_repo_secret(self,secret_name:str,owner:str,repo:str) -> json:
-        end_point = f'https://api.github.com/repos/{owner}/{repo}/actions/secrets/{secret_name}'
-        response = self.call_api('DELETE',end_point=end_point)
+        endpoint = f'https://api.github.com/repos/{owner}/{repo}/actions/secrets/{secret_name}'
+        response = self.call_endpoint(method='DELETE',endpoint=endpoint, headers=self.get_header())
         content = self.get_content_response(response)
-        return content
-
-    ##UTIL
-    def call_api(self,method,end_point,payload:json=None) -> requests.Response:
-        if payload!=None:
-            print(f'Calling: {end_point}')
-            response = requests.request(method, end_point, headers=self.get_header(),data=json.dumps(payload))
-        else:
-            print(f'Calling: {end_point}')
-            response = requests.request(method, end_point, headers=self.get_header())
-        return response
-    
-    def get_content_response(self,response:requests.Response) -> json:
-        """
-        Response is always in json object
-        
-        """
-        if response.status_code==204:##No content
-            content = {}
-        else:
-            try:
-                content = response.json()
-                print("retrieved the response..")
-            except json.JSONDecodeError as e:
-                raise Exception('No response: ', e)
         return content
     
 if __name__=='__main__':

@@ -77,7 +77,16 @@ class ManageProject:
                 tf_cloud.create_workspace_variable(payload=value)
         
 
+
     def init_remote_server(self):
+        #copy ssh key from terraform state file to access the remote server
+        tf_cloud = TFCloudCustom(token=self.get_config_variable('terraform_api_token'),
+                                 organization=self.get_config_variable('terraform_organization'),
+                                 workspace=self.get_config_variable('terraform_workspace'))
+        tf_cloud.copy_tls_ssh_keys_from_remote_to_local(to_key_name=self.get_config_variable('local_ssh_key_name'),
+                                                        to_ssh_path_name=self.get_config_variable('local_ssh_path'))
+        
+
         # variables for connecting to remote server
         hetz_api = HetznerApi(api_token=self.get_config_variable('hetzner_api_token'))
         ip = hetz_api.get_server_ipv4_by_name(server_name=self.get_config_variable('hetzner_main_server_name'))
@@ -99,7 +108,6 @@ class ManageProject:
         git = GithubApi(token=self.get_config_variable('github_api_token'))
         github_variables = InitGithub()
         github_variables.set_github_variables(variables=self.get_config())
-
         git_vars = {}
         git_secrets = {}
         for key,value in github_variables.get_github_variables().items():
@@ -107,14 +115,24 @@ class ManageProject:
                 git_vars.update({key:value['value']})
             else:
                 git_secrets.update({key:value['value']})
-        
+
         for key, value in git_vars.items():
-            git.update_and_insert_repo_variable(var_name=key,var_value=value, owner=self.get_config_variable('github_user'),
-                                     repo=self.get_config_variable('github_repository'))
-        
+            if key.startswith('github_'):
+                new_key=key.replace('github_','git_',1)
+                git.update_and_insert_repo_variable(var_name=new_key,var_value=value, owner=self.get_config_variable('github_user'),
+                                                    repo=self.get_config_variable('github_repository'))
+            else:
+                git.update_and_insert_repo_variable(var_name=key,var_value=value, owner=self.get_config_variable('github_user'),
+                                                    repo=self.get_config_variable('github_repository'))
+
         for key,value in git_secrets.items():
-            git.update_and_insert_repo_secret(secret_name=key, secret_value=value,owner=self.get_config_variable('github_user'),
-                                     repo=self.get_config_variable('github_repository'))
+            if key.startswith('github_'):
+                new_key=key.replace('github_','git_',1)
+                git.update_and_insert_repo_secret(secret_name=new_key,secret_value=value, owner=self.get_config_variable('github_user'),
+                                                    repo=self.get_config_variable('github_repository'))
+            else:
+                git.update_and_insert_repo_secret(secret_name=key,secret_value=value, owner=self.get_config_variable('github_user'),
+                                                    repo=self.get_config_variable('github_repository'))
         
     def update_terraform_variables(self, list_of_variable_names=None):
         tf_cloud = TFCloudCustom(token=self.get_config_variable('terraform_api_token'),
@@ -197,7 +215,7 @@ if __name__=='__main__':
     elif args.function == "update_local_ip_terraform_variable":
         init_proj.update_local_ip_terraform_variable()
     elif args.function == "get_main_ids":
-        init_proj.get_main_ids()
+        print(init_proj.get_main_ids())
     elif args.function == "get_project_objects_status":
         project_objects_statuses = init_proj.get_project_objects_status()
         print(project_objects_statuses)

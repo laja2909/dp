@@ -31,7 +31,7 @@ jobs:
     - name: get hetzner server id
       run: |
         SERVER_ID=$(curl \
-        -H "Authorization: Bearer ${{ secrets.HETZNER_TOKEN }}" \
+        -H "Authorization: Bearer ${{ secrets.HETZNER_API_TOKEN }}" \
         'https://api.hetzner.cloud/v1/servers?name=${{ vars.HETZNER_MAIN_SERVER_NAME }}' | jq '.servers[0].id')
         echo "SERVER_ID=$SERVER_ID" >> $GITHUB_ENV
         
@@ -45,7 +45,7 @@ jobs:
       run: |
         curl \
           -X POST \
-          -H "Authorization: Bearer ${{ secrets.HETZNER_TOKEN }}" \
+          -H "Authorization: Bearer ${{ secrets.HETZNER_API_TOKEN }}" \
           -H "Content-Type: application/json" \
           -d '{"name":"'$FIREWALL_NAME'","labels":{"key":"value"},"rules":[{"description":"Allow ssh","direction":"in","source_ips":["'$CIDR'"],"protocol":"tcp","port":"22"}],"apply_to":[{"type":"server","server":{"id":'$SERVER_ID'}}]}' \
           'https://api.hetzner.cloud/v1/firewalls'
@@ -59,20 +59,20 @@ jobs:
         ssh-keyscan -H ${{ secrets.REMOTE_SSH_HOST_IP }} > ~/.ssh/known_hosts
         
     - name: update repository in hetzner server
-      run: ssh ${{ secrets.REMOTE_SSH_USER }}@${{ secrets.REMOTE_SSH_HOST_IP }} "cd ${{ vars.REMOTE_ROOT_FOLDER_NAME }}/${{ vars.GIT_REPOSITORY }} && git checkout ${{ vars.GIT_MAIN_BRANCH_NAME }} && git pull && exit"
+      run: ssh ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_SSH_HOST_IP }} "cd ${{ vars.REMOTE_ROOT_FOLDER_NAME }}/${{ vars.GIT_REPOSITORY }} && git checkout ${{ vars.GIT_MAIN_BRANCH_NAME }} && git pull && exit"
 
     - name: update remote server requirements.txt
-      run: ssh ${{ secrets.REMOTE_SSH_USER }}@${{ secrets.REMOTE_SSH_HOST_IP }} "cd ${{ vars.REMOTE_ROOT_FOLDER_NAME }}/${{ vars.GIT_REPOSITORY }} && source venv/bin/activate && python3 -m pip install -r requirements.txt && exit"
+      run: ssh ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_SSH_HOST_IP }} "cd ${{ vars.REMOTE_ROOT_FOLDER_NAME }}/${{ vars.GIT_REPOSITORY }} && source venv/bin/activate && python3 -m pip install -r requirements.txt && exit"
 
     - name: in remote server update project as editable state
-      run: ssh ${{ secrets.REMOTE_SSH_USER }}@${{ secrets.REMOTE_SSH_HOST_IP }} "cd ${{ vars.REMOTE_ROOT_FOLDER_NAME }}/${{ vars.GIT_REPOSITORY }} && source venv/bin/activate && python3 -m pip install -e . && exit"
+      run: ssh ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_SSH_HOST_IP }} "cd ${{ vars.REMOTE_ROOT_FOLDER_NAME }}/${{ vars.GIT_REPOSITORY }} && source venv/bin/activate && python3 -m pip install -e . && exit"
 
     - name: get firewall resource hetzner id
       id: get_firewall_id
       if: steps.create_firewall.outcome == 'success'
       run: |
         FIREWALL_ID=$(curl \
-        -H "Authorization: Bearer ${{ secrets.HETZNER_TOKEN }}" \
+        -H "Authorization: Bearer ${{ secrets.HETZNER_API_TOKEN }}" \
         'https://api.hetzner.cloud/v1/firewalls?name='$FIREWALL_NAME'' | jq '.firewalls[0].id')
         echo "FIREWALL_ID=$FIREWALL_ID" >> $GITHUB_ENV
 
@@ -82,7 +82,7 @@ jobs:
       run: |
         curl \
           -X POST \
-          -H "Authorization: Bearer ${{ secrets.HETZNER_TOKEN }}" \
+          -H "Authorization: Bearer ${{ secrets.HETZNER_API_TOKEN }}" \
           -H "Content-Type: application/json" \
           -d '{"remove_from":[{"type":"server","server":{"id":'$SERVER_ID'}}]}' \
           'https://api.hetzner.cloud/v1/firewalls/'$FIREWALL_ID'/actions/remove_from_resources'
@@ -92,7 +92,7 @@ jobs:
       run: |
         curl \
           -X DELETE \
-          -H "Authorization: Bearer ${{ secrets.HETZNER_TOKEN }}" \
+          -H "Authorization: Bearer ${{ secrets.HETZNER_API_TOKEN }}" \
           'https://api.hetzner.cloud/v1/firewalls/'$FIREWALL_ID''
     
     - name: cleanup
