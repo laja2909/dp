@@ -134,6 +134,26 @@ class ManageProject:
                 git.update_and_insert_repo_secret(secret_name=key,secret_value=value, owner=self.get_config_variable('github_user'),
                                                     repo=self.get_config_variable('github_repository'))
         
+
+    def init_airflow(self):
+        # variables for connecting to remote server
+        hetz_api = HetznerApi(api_token=self.get_config_variable('hetzner_api_token'))
+        ip = hetz_api.get_server_ipv4_by_name(server_name=self.get_config_variable('hetzner_main_server_name'))
+        # initialise connection
+        ssh = RemoteSSH(hostname=ip,
+                        port=self.get_config_variable('hetzner_firewall_ssh_port'),
+                        user=self.get_config_variable('remote_user'),
+                        private_key_name=Path(self.get_config_variable('local_ssh_path')).joinpath(self.get_config_variable('local_ssh_key_name')).as_posix()
+        )
+
+
+        #initialise airflow script
+        ##airflow_script = InitAirflow()
+        ##InitAirflow.set_initialisation_script(variables=self.get_config())
+        
+        ##ssh.execute_via_private_key(command=remote_script.get_initialisation_script())
+
+        
     def update_and_insert_terraform_variables(self, list_of_variable_names=None):
         tf_cloud = TFCloudCustom(token=self.get_config_variable('terraform_api_token'),
                                  organization=self.get_config_variable('terraform_organization'),
