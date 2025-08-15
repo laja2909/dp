@@ -134,7 +134,7 @@ class ManageProject:
                 git.update_and_insert_repo_secret(secret_name=key,secret_value=value, owner=self.get_config_variable('github_user'),
                                                     repo=self.get_config_variable('github_repository'))
         
-    def update_terraform_variables(self, list_of_variable_names=None):
+    def update_and_insert_terraform_variables(self, list_of_variable_names=None):
         tf_cloud = TFCloudCustom(token=self.get_config_variable('terraform_api_token'),
                                  organization=self.get_config_variable('terraform_organization'),
                                  workspace=self.get_config_variable('terraform_workspace'))
@@ -146,17 +146,17 @@ class ManageProject:
         if list_of_variable_names==None:
             if terraform_payloads.get_payload_variables():
                 for key,value in terraform_payloads.get_payload_variables().items():
-                    tf_cloud.create_workspace_variable(payload=value)
+                    tf_cloud.update_and_insert_workspace_variable(variable_name=key,payload=value)
         else:
             if terraform_payloads.get_payload_variables():
                 for key,value in terraform_payloads.get_payload_variables().items():
                     if key in list_of_variable_names:
-                        tf_cloud.create_workspace_variable(payload=value)
+                        tf_cloud.update_and_insert_workspace_variable(variable_name=key,payload=value)
                     else:
                         continue
     #UPDATES
-    def update_local_ip_terraform_variable(self):
-        self.update_terraform_variables(list_of_variable_names=['local_ip'])
+    def update_and_insert_local_ip_terraform_variable(self):
+        self.update_and_insert_terraform_variables(list_of_variable_names=['local_ip'])
     
     #RUNS
     def trigger_terraform_run(self):
@@ -193,8 +193,8 @@ if __name__=='__main__':
                                              "init_remote_server",
                                              "init_github",
                                              "trigger_terraform_run",
-                                             "update_terraform_variables",
-                                             "update_local_ip_terraform_variable",
+                                             "update_and_insert_terraform_variables",
+                                             "update_and_insert_local_ip_terraform_variable",
                                              "get_main_ids",
                                              "get_project_objects_status",
                                              "destroy_resources",
@@ -210,10 +210,10 @@ if __name__=='__main__':
         init_proj.init_github()
     elif args.function == "trigger_terraform_run":
          init_proj.trigger_terraform_run()
-    elif args.function == "update_terraform_variables":
-        init_proj.update_terraform_variables()
-    elif args.function == "update_local_ip_terraform_variable":
-        init_proj.update_local_ip_terraform_variable()
+    elif args.function == "update__and_insert_terraform_variables":
+        init_proj.update_and_insert_terraform_variables()
+    elif args.function == "update_and_insert_local_ip_terraform_variable":
+        init_proj.update_and_insert_local_ip_terraform_variable()
     elif args.function == "get_main_ids":
         print(init_proj.get_main_ids())
     elif args.function == "get_project_objects_status":
