@@ -1,3 +1,5 @@
+# how to add first simple dag to our airflow service?
+# where to store the airflow logs? Apply to the .gitignore also the logs so that we dont save them to repository
 # Should we add our local env variables to the remote server as well?? Probably yes
 
 

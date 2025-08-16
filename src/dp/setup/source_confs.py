@@ -196,4 +196,8 @@ class InitAirflow:
         sudo apt install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
         sudo usermod -aG docker $USER
         newgrp docker
+        cd {variables['remote_root_folder_name']['value']}\dp\src\dp\setup\airflow
+        echo -e "AIRFLOW_UID=$(id -u)\nAIRFLOW_GID=0" > .env
+        docker compose up airflow-init
+        docker compose up -d
         """
