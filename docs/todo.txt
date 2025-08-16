@@ -1,6 +1,10 @@
-# test if the initialisation still works
+# Should we add our local env variables to the remote server as well?? Probably yes
+
 
 # airflow
+
+
+
 # postgres database
 
 # There should be only one config file, but now there is many... terraform variable file and confs.json need to do something about it.
@@ -36,6 +40,7 @@ ALSO THINK ABOUT CREATING GLOBAL CONFS FILE FOR ALL NECESSARY VARIABLES!
 
 
 #DONE:
+# test if the initialisation still works
 ## create test functions to determine if terraform resources or aws or hetzner resources exist
 #And everytime syncing job, need to add pip install --requirements.txt there?
 # init github:
