@@ -173,3 +173,27 @@ class InitGithub:
                                     })
         
         self._github_variables = final_variable_dict
+
+class InitAirflow:
+    def __init__(self):
+        pass
+
+    def get_initialisation_script(self):
+        return self._initialisation_script.strip()
+
+    def set_initialisation_script(self,variables:dict):
+        self._initialisation_script = f"""
+        set -e
+        sudo apt update
+        sudo apt upgrade -y
+        sudo apt install -y ca-certificates curl gnupg lsb-release
+        echo \
+            "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] \
+            https://download.docker.com/linux/ubuntu \
+            $(lsb_release -cs) stable" | \
+            sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+        sudo apt update
+        sudo apt install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+        sudo usermod -aG docker $USER
+        newgrp docker
+        """

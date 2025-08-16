@@ -286,6 +286,16 @@ class TFCloud(API):
         return content
     
     
+    ##MULTIPLE
+    def update_and_insert_workspace_variable(self,variable_name:str,payload:dict):
+        variable_exists = self.has_workspace_variable(variable_name=variable_name)
+        if variable_exists:
+            self.update_variable_value(variable_name=variable_name,payload=payload)
+        else:
+            self.delete_variable(variable_name=variable_name)
+            self.create_workspace_variable(payload=payload)
+
+
     ##BOOL
     def is_equal_to_variable_value(self, comparison_value:str,variable_name:str)->bool:
         variable_value = self.get_variable_value(variable_name)
@@ -319,6 +329,17 @@ class TFCloud(API):
             response.raise_for_status()
         return has_workspace
     
+    def has_workspace_variable(self, variable_name:str) -> bool:
+        variables = self.get_vars_end_point_content()
+        has_variable = False
+        for ind, value in enumerate(variables['data']):
+            if value['attributes']['key']==variable_name:
+                has_variable=True
+                break
+            else:
+                continue
+        return has_variable
+    
     
     def has_workspace_resources_running(self) -> bool:
         if self.has_terraform_workspace():
@@ -336,4 +357,4 @@ class TFCloud(API):
 if __name__=='__main__':
     confs = get_global_confs(file_path=Path(__file__).parent.parent.parent.joinpath('setup/confs.json').as_posix())
     tf_api = TFCloud(token=confs['terraform_api_token']['value'],workspace=confs['terraform_workspace']['value'],organization=confs['terraform_organization']['value'])
-    print(tf_api.get_oauth_client_id_by_service_provider(service_provider='github'))
+    print(tf_api.has_terraform_workspace_variable('local_ipv'))
